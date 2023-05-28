@@ -1,19 +1,59 @@
 {
-  "compilerOptions": {
-    "target": "es5",
-    "module": "esnext",
-    "baseUrl": "./",
-    "moduleResolution": "node",
-    "paths": {
-      "@/*": [
-        "src/*"
-      ]
-    },
-    "lib": [
-      "esnext",
-      "dom",
-      "dom.iterable",
-      "scripthost"
-    ]
-  }
+    "compilerOptions": {
+        "target": "es5",
+        "module": "esnext",
+        "baseUrl": "./",
+        "moduleResolution": "node",
+        "paths": {
+            "@": [
+                "src"
+            ],
+            "@/*": [
+                "src/*"
+            ],
+            "vue$": [
+                "vue\\dist\\vue.runtime.esm.js"
+            ],
+            "vue$/*": [
+                "vue\\dist\\vue.runtime.esm.js/*"
+            ],
+            "@assets": [
+                "src\\assets"
+            ],
+            "@assets/*": [
+                "src\\assets/*"
+            ],
+            "@components": [
+                "src\\components"
+            ],
+            "@components/*": [
+                "src\\components/*"
+            ],
+            "@views": [
+                "src\\views"
+            ],
+            "@views/*": [
+                "src\\views/*"
+            ],
+            "@pages": [
+                "src\\pages"
+            ],
+            "@pages/*": [
+                "src\\pages/*"
+            ],
+            "@store": [
+                "src\\store"
+            ],
+            "@store/*": [
+                "src\\store/*"
+            ]
+        },
+        "lib": [
+            "esnext",
+            "dom",
+            "dom.iterable",
+            "scripthost"
+        ],
+        "jsx": "preserve"
+    }
 }
