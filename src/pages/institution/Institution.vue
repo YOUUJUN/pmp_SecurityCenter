@@ -19,7 +19,7 @@
 				</side-bar>
 			</template>
 
-			<!-- <index></index> -->
+			<index></index>
 		</layout-vue>
 	</div>
 </template>
@@ -28,6 +28,7 @@ import LayoutVue from '@/components/Layout/Layout.vue'
 import NavBar from '@/components/Layout/Parts/NavBar.vue'
 import SideBar from '@/components/Layout/Parts/SideBar.vue'
 
+import Index from './modules/Index.vue'
 import CategoryCtrl from './modules/Ctrl/CategoryCtrl.vue'
 import TreeMenu from './modules/TreeMenu.vue'
 export default {
@@ -35,6 +36,8 @@ export default {
 		LayoutVue,
 		NavBar,
 		SideBar,
+
+		Index,
 		CategoryCtrl,
 		TreeMenu,
 	},

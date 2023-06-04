@@ -18,9 +18,9 @@
 
 			<el-main class="content-wrap">
 				<div class="content">
-					<el-scrollbar style="height: 100%">
-						<slot></slot>
-					</el-scrollbar>
+					<!-- <el-scrollbar style="height: 100%"> -->
+					<slot></slot>
+					<!-- </el-scrollbar> -->
 				</div>
 			</el-main>
 			<!-- <el-footer>Footer</el-footer> -->
@@ -91,6 +91,7 @@ export default {
 	left: 0;
 	right: 0;
 	overflow: hidden;
+	padding: 20px;
 }
 
 .aside {
