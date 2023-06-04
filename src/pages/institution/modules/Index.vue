@@ -12,18 +12,24 @@
 
 		<section class="panel-right">
 			<h2 class="panel-title">区域</h2>
-			<div class="panel-right-wrap"></div>
+			<el-scrollbar class="scroll-wrap" style="height: 100%">
+				<div class="panel-right-wrap">
+					<AreaCard v-for="(item, index) in 15" :key="index"></AreaCard>
+				</div>
+			</el-scrollbar>
 		</section>
 	</article>
 </template>
 
 <script>
 import RoomCard from '@/pages/institution/components/RoomCard.vue'
+import AreaCard from '@/pages/institution/components/AreaCard.vue'
 export default {
 	name: 'SecurityCenterInstitutionIndex',
 
 	components: {
 		RoomCard,
+		AreaCard,
 	},
 
 	data() {
@@ -74,10 +80,10 @@ export default {
 		flex: auto;
 		background-color: #fff;
 		border-radius: 10px;
+		padding: 16px 0;
 	}
 
-	.panel-left-wrap,
-	.panel-right-wrap {
+	.panel-left-wrap {
 		flex: auto;
 		height: 100%;
 		display: grid;
@@ -85,8 +91,17 @@ export default {
 		grid-template-rows: repeat(5, 1fr);
 		row-gap: 16px;
 		column-gap: 16px;
-		padding: 16px;
+		padding: 0 16px;
 		align-items: start;
+	}
+
+	.panel-right-wrap {
+		flex: auto;
+		height: 100%;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-start;
+		align-items: center;
 	}
 }
 </style>

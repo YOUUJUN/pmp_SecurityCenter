@@ -14,5 +14,6 @@ module.exports = {
 		'vue/multi-word-component-names': 'off',
 		'valid-typeof': 'off',
 		'vue/no-unused-vars': 'off',
+		'prettier/prettier': 'off',
 	},
 }

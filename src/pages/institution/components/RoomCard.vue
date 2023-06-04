@@ -3,7 +3,7 @@
 		<div class="card-top">
 			<img class="card-avatar" src="~@/assets/images/elder.png" />
 			<span class="card-name">101-01</span>
-			<div class="card-time"></div>
+			<el-button class="card-num" type="danger" circle size="mini">30s</el-button>
 		</div>
 		<ul class="card-middle">
 			<li class="card-item">
@@ -65,6 +65,14 @@ export default {
 			font-family: PingFang SC;
 			font-weight: bold;
 			color: #333333;
+		}
+
+		.card-num {
+			display: flex;
+			width: 30px;
+			height: 30px;
+			align-items: center;
+			justify-content: center;
 		}
 	}
 
