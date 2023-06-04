@@ -13,5 +13,6 @@ module.exports = {
 		'no-unused-vars': 'off',
 		'vue/multi-word-component-names': 'off',
 		'valid-typeof': 'off',
+		'vue/no-unused-vars': 'off',
 	},
 }

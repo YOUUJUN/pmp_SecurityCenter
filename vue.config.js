@@ -223,17 +223,5 @@ module.exports = function () {
 					return args
 				})
 		},
-
-		css: {
-			loaderOptions: {
-				// 给 less-loader 传递 Less.js 相关选项
-				less: {
-					// `globalVars` 定义全局对象，可加入全局变量
-					globalVars: {
-						// primary: '#333'
-					},
-				},
-			},
-		},
 	}
 }
