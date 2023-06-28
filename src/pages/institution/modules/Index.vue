@@ -14,31 +14,42 @@
 			<h2 class="panel-title">区域</h2>
 			<el-scrollbar class="scroll-wrap" style="height: 100%">
 				<div class="panel-right-wrap">
-					<AreaCard v-for="(item, index) in 15" :key="index"></AreaCard>
+					<AreaCard v-for="(item, index) in 15" :key="index" @click.native="openAreaDlg()"></AreaCard>
 				</div>
 			</el-scrollbar>
 		</section>
+
+		<AreaDetailDlg :visible.sync="visible"></AreaDetailDlg>
 	</article>
 </template>
 
 <script>
 import RoomCard from '@/pages/institution/components/RoomCard.vue'
 import AreaCard from '@/pages/institution/components/AreaCard.vue'
+import AreaDetailDlg from '../components/AreaDetailDlg.vue'
+
 export default {
 	name: 'SecurityCenterInstitutionIndex',
 
 	components: {
 		RoomCard,
 		AreaCard,
+		AreaDetailDlg,
 	},
 
 	data() {
-		return {}
+		return {
+			visible: false,
+		}
 	},
 
 	mounted() {},
 
-	methods: {},
+	methods: {
+		openAreaDlg() {
+			this.visible = true
+		},
+	},
 }
 </script>
 

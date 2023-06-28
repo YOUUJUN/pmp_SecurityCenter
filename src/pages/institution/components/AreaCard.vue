@@ -39,6 +39,7 @@ export default {
 	border: 1px solid #c5cec6;
 	padding: 6px 16px;
 	margin: 8px 0;
+	cursor: pointer;
 
 	&:first-child {
 		margin-top: 0;
