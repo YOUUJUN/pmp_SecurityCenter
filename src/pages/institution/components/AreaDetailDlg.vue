@@ -152,6 +152,9 @@ export default {
 				},
 				yAxis: {
 					data: yData,
+					type : 'value',
+					min: 0,
+					max : 10,
 					axisLine: {
 						show: false,
 					},

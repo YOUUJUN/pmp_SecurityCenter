@@ -20,22 +20,35 @@
 			</li>
 		</ul>
 		<div class="card-bottom">
-			<el-button class="card-btn" plain>查看详情</el-button>
+			<el-button class="card-btn" plain @click="handleOpenElderDlg">查看详情</el-button>
 		</div>
+
+		<ElderInfoDlg :visible.sync="visible"></ElderInfoDlg>
 	</div>
 </template>
 
 <script>
+import ElderInfoDlg from './ElderInfoDlg.vue';
 export default {
 	name: 'SecurityCenterRoomCard',
 
+	components : {
+		ElderInfoDlg
+	},
+
 	data() {
-		return {}
+		return {
+			visible : false,
+		}
 	},
 
 	mounted() {},
 
-	methods: {},
+	methods: {
+		handleOpenElderDlg(){
+			this.visible = true
+		}
+	},
 }
 </script>
 
