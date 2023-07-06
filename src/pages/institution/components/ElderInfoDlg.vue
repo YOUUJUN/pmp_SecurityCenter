@@ -56,12 +56,14 @@
 			<section class="monitor-chart-container">
 				<div class="chart-head">
 					<div class="chart-head-left">
-						<img src="" class="chart-logo" />
+						<img src="~@/assets/images/monitor.png" class="chart-logo" />
 						<span class="chart-title">监测时段</span>
 						<span class="chart-desc">(睡眠时长8小时23分钟)</span>
 					</div>
+				</div>
 
-					<div class="chart-head-right"></div>
+				<div class="chart-body">
+					<div class="monitor-chart" ref="monitor"></div>
 				</div>
 			</section>
 		</article>
@@ -139,9 +141,10 @@ export default {
 		//处理窗体打开
 		handleDlgOpen() {
 			this.drawHeartChart()
+			this.drawMonitorChart()
 		},
 
-		//绘制矩形
+		//绘制呼吸心跳图
 		drawHeartChart() {
 			var chartDom = this.$refs.bar
 			var myChart = echarts.init(chartDom)
@@ -183,6 +186,95 @@ export default {
 						markLine: {
 							data: [{ type: 'average', name: 'Avg' }],
 						},
+					},
+				],
+			}
+
+			option && myChart.setOption(option)
+		},
+
+		//绘制监测时段图表
+		drawMonitorChart() {
+			var chartDom = this.$refs.monitor
+			var myChart = echarts.init(chartDom)
+			var option
+
+			option = {
+				tooltip: {
+					trigger: 'axis',
+					axisPointer: {
+						// Use axis to trigger tooltip
+						type: 'none', // 'shadow' as default; can also be 'line' or 'shadow'
+					},
+				},
+				legend: {
+					right : '4%'
+				},
+				grid: {
+					left: '3%',
+					right: '4%',
+					bottom: '3%',
+					top: '6%',
+					// containLabel: true,
+				},
+				xAxis: {
+					type: 'value',
+					show: false,
+				},
+				yAxis: {
+					type: 'category',
+					show: false,
+					data: ['监测时段'],
+				},
+				series: [
+					{
+						name: '深睡',
+						type: 'bar',
+						barWidth: 20,
+						stack: 'percent',
+						label: {
+							show: true,
+						},
+						// emphasis: {
+						//   focus: 'series'
+						// },
+						data: [25],
+					},
+					{
+						name: '浅睡',
+						type: 'bar',
+						stack: 'percent',
+						label: {
+							show: true,
+						},
+						emphasis: {
+							focus: 'series',
+						},
+						data: [25],
+					},
+					{
+						name: '清醒',
+						type: 'bar',
+						stack: 'percent',
+						label: {
+							show: true,
+						},
+						emphasis: {
+							focus: 'series',
+						},
+						data: [25],
+					},
+					{
+						name: '离床',
+						type: 'bar',
+						stack: 'percent',
+						label: {
+							show: true,
+						},
+						emphasis: {
+							focus: 'series',
+						},
+						data: [25],
 					},
 				],
 			}
@@ -346,6 +438,44 @@ export default {
 
 					.table-pagging {
 					}
+				}
+			}
+		}
+
+		.monitor-chart-container {
+			.chart-head {
+				padding: 20px;
+				.chart-head-left {
+					display: flex;
+					flex-direction: row;
+					align-items: center;
+					.chart-logo {
+						width: 25px;
+						height: 25px;
+						margin-right: 12px;
+					}
+
+					.chart-title {
+						font-size: 18px;
+						font-family: PingFang SC;
+						font-weight: 500;
+						color: #333333;
+						margin-right: 14px;
+					}
+
+					.chart-desc {
+						font-size: 16px;
+						font-family: PingFang SC;
+						font-weight: 500;
+						color: #999999;
+					}
+				}
+			}
+
+			.chart-body {
+				.monitor-chart {
+					height: 80px;
+					width: 100%;
 				}
 			}
 		}
