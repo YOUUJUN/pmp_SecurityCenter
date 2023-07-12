@@ -53,7 +53,7 @@
 				</div>
 			</section>
 
-			<section class="monitor-chart-container">
+			<section class="chart-container">
 				<div class="chart-head">
 					<div class="chart-head-left">
 						<img src="~@/assets/images/monitor.png" class="chart-logo" />
@@ -64,6 +64,19 @@
 
 				<div class="chart-body">
 					<div class="monitor-chart" ref="monitor"></div>
+				</div>
+			</section>
+
+			<section class="chart-container">
+				<div class="chart-head">
+					<div class="chart-head-left">
+						<img src="~@/assets/images/monitor.png" class="chart-logo" />
+						<span class="chart-title">睡眠详情</span>
+					</div>
+				</div>
+
+				<div class="chart-body">
+					<div class="sleep-chart" ref="sleep"></div>
 				</div>
 			</section>
 		</article>
@@ -142,6 +155,7 @@ export default {
 		handleDlgOpen() {
 			this.drawHeartChart()
 			this.drawMonitorChart()
+			this.drawSleepChart()
 		},
 
 		//绘制呼吸心跳图
@@ -208,7 +222,7 @@ export default {
 					},
 				},
 				legend: {
-					right : '4%'
+					right: '4%',
 				},
 				grid: {
 					left: '3%',
@@ -275,6 +289,75 @@ export default {
 							focus: 'series',
 						},
 						data: [25],
+					},
+				],
+			}
+
+			option && myChart.setOption(option)
+		},
+
+		//绘制睡眠详情图表
+		drawSleepChart() {
+			const chartDom = this.$refs.sleep
+			const myChart = echarts.init(chartDom)
+
+			const data = [
+				{
+					name: '任务1',
+					startTime: '2023-07-01',
+					endTime: '2023-07-05',
+				},
+				{
+					name: '任务2',
+					startTime: '2023-07-06',
+					endTime: '2023-07-10',
+				},
+				// 其他任务...
+			]
+
+			var option = {
+				tooltip: {
+					formatter: function (params) {
+						return params.marker + params.name + ': ' + params.data.startTime + ' ~ ' + params.data.endTime
+					},
+				},
+				xAxis: {
+					type: 'time',
+				},
+				yAxis: {
+					data: data.map(function (item) {
+						return item.name
+					}),
+				},
+				series: [
+					{
+						type: 'custom',
+						renderItem: function (params, api) {
+							var startTime = api.value(0)
+							var endTime = api.value(1)
+							var duration = endTime - startTime
+							var rect = api.coord([startTime, api.value(2)])
+							var height = api.size([0, duration])[1] * 0.6
+
+							return {
+								type: 'rect',
+								shape: {
+									x: rect[0],
+									y: rect[1] - height / 2,
+									width: rect[2] - rect[0],
+									height: height,
+								},
+								style: api.style(),
+							}
+						},
+						encode: {
+							x: [1, 2],
+							y: 0,
+							tooltip: [1, 2],
+						},
+						data: data.map(function (item) {
+							return [item.startTime, item.endTime, item.name]
+						}),
 					},
 				],
 			}
@@ -442,7 +525,7 @@ export default {
 			}
 		}
 
-		.monitor-chart-container {
+		.chart-container {
 			.chart-head {
 				padding: 20px;
 				.chart-head-left {
@@ -475,6 +558,11 @@ export default {
 			.chart-body {
 				.monitor-chart {
 					height: 80px;
+					width: 100%;
+				}
+
+				.sleep-chart {
+					height: 220px;
 					width: 100%;
 				}
 			}
