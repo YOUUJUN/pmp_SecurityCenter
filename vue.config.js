@@ -212,16 +212,18 @@ module.exports = function () {
 					return options
 				})
 
-			config.optimization //去除生产环境console;
-				.minimize(true)
-				.minimizer('terser')
-				.tap((args) => {
-					let { terserOptions } = args[0]
-					console.log('terserOptions', terserOptions)
-					terserOptions.compress.drop_console = true
-					terserOptions.compress.drop_debugger = true
-					return args
-				})
+			config.when(process.env.NODE_ENV === 'production', (config) => {
+				config.optimization //去除生产环境console;
+					.minimize(true)
+					.minimizer('terser')
+					.tap((args) => {
+						let { terserOptions } = args[0]
+						console.log('terserOptions', terserOptions)
+						terserOptions.compress.drop_console = true
+						terserOptions.compress.drop_debugger = true
+						return args
+					})
+			})
 		},
 	}
 }

@@ -84,6 +84,8 @@
 </template>
 <script>
 import * as echarts from 'echarts'
+import { Chart } from '@antv/g2'
+
 export default {
 	props: {
 		visible: {
@@ -297,7 +299,7 @@ export default {
 		},
 
 		//绘制睡眠详情图表
-		drawSleepChart() {
+		drawSleepChart1() {
 			const chartDom = this.$refs.sleep
 			const myChart = echarts.init(chartDom)
 
@@ -363,6 +365,53 @@ export default {
 			}
 
 			option && myChart.setOption(option)
+		},
+
+		//绘制睡眠详情图表
+		drawSleepChart() {
+			const shell = this.$refs.sleep
+			const chart = new Chart({
+				container: shell,
+				theme: 'classic',
+				autoFit: true,
+				paddingLeft: 60,
+			})
+
+			chart.coordinate({ transform: [{ type: 'transpose' }] })
+			chart
+				.interval()
+				.style('radius', 4)
+				.style('maxWidth', 30)
+				.data([
+					{ month: '离床', profit: 387264, start: 0, end: 387264 },
+					{ month: '离床', profit: 387264, start: 487264, end: 587264 },
+					{ month: '清醒', profit: 772096, start: 387264, end: 1159360 },
+					{ month: '浅睡', profit: 638075, start: 1159360, end: 1797435 },
+					{ month: '深睡', profit: -211386, start: 1797435, end: 1586049 },
+				])
+				.encode('x', 'month')
+				.encode('y', ['start', 'end'])
+				.axis('x', {
+					title: false,
+				})
+				.axis('y', {
+					title: false,
+				})
+				.scale('y', {
+					type: 'time',
+					/* 其他配置项 */
+				})
+				.encode('color', 'month')
+				.scale('color', {
+					type: 'ordinal',
+					range: ['#7593ed', '#95e3b0', '#6c7893', '#e7c450', '#7460eb'],
+				})
+				.legend('color', {
+					title: false,
+				})
+				.tooltip(['start', 'end'])
+
+			chart.render()
 		},
 	},
 }
