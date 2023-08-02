@@ -79,6 +79,61 @@
 					<div class="sleep-chart" ref="sleep"></div>
 				</div>
 			</section>
+
+			<section class="chart-container">
+				<div class="chart-head">
+					<div class="chart-head-left">
+						<img src="~@/assets/images/monitor.png" class="chart-logo" />
+						<span class="chart-title">体动详情</span>
+					</div>
+				</div>
+
+				<div class="chart-body">
+					<div class="kinesia-chart" ref="kinesia"></div>
+				</div>
+			</section>
+
+			<section class="chart-container">
+				<div class="chart-head">
+					<div class="chart-head-left">
+						<img src="~@/assets/images/monitor.png" class="chart-logo" />
+						<span class="chart-title">心率</span>
+						<span class="chart-desc">(平均65bpm 最低50bpm 最高80bpm)</span>
+					</div>
+				</div>
+
+				<div class="chart-body">
+					<div class="heart-chart" ref="heart"></div>
+				</div>
+			</section>
+
+			<section class="chart-container">
+				<div class="chart-head">
+					<div class="chart-head-left">
+						<img src="~@/assets/images/monitor.png" class="chart-logo" />
+						<span class="chart-title">呼吸率</span>
+						<span class="chart-desc">(平均65bpm 最低50bpm 最高80bpm)</span>
+					</div>
+				</div>
+
+				<div class="chart-body">
+					<div class="breath-chart" ref="breath"></div>
+				</div>
+			</section>
+
+			<section class="chart-container">
+				<div class="chart-head">
+					<div class="chart-head-left">
+						<img src="~@/assets/images/monitor.png" class="chart-logo" />
+						<span class="chart-title">呼吸暂停</span>
+						<span class="chart-desc">(次数3次，平均18秒)</span>
+					</div>
+				</div>
+
+				<div class="chart-body">
+					<div class="apnea-chart" ref="apnea"></div>
+				</div>
+			</section>
 		</article>
 	</el-dialog>
 </template>
@@ -158,6 +213,9 @@ export default {
 			this.drawHeartChart()
 			this.drawMonitorChart()
 			this.drawSleepChart()
+			this.drawKinesiaChart()
+			this.drawHeartRateChart()
+			this.drawBreathChart()
 		},
 
 		//绘制呼吸心跳图
@@ -299,75 +357,6 @@ export default {
 		},
 
 		//绘制睡眠详情图表
-		drawSleepChart1() {
-			const chartDom = this.$refs.sleep
-			const myChart = echarts.init(chartDom)
-
-			const data = [
-				{
-					name: '任务1',
-					startTime: '2023-07-01',
-					endTime: '2023-07-05',
-				},
-				{
-					name: '任务2',
-					startTime: '2023-07-06',
-					endTime: '2023-07-10',
-				},
-				// 其他任务...
-			]
-
-			var option = {
-				tooltip: {
-					formatter: function (params) {
-						return params.marker + params.name + ': ' + params.data.startTime + ' ~ ' + params.data.endTime
-					},
-				},
-				xAxis: {
-					type: 'time',
-				},
-				yAxis: {
-					data: data.map(function (item) {
-						return item.name
-					}),
-				},
-				series: [
-					{
-						type: 'custom',
-						renderItem: function (params, api) {
-							var startTime = api.value(0)
-							var endTime = api.value(1)
-							var duration = endTime - startTime
-							var rect = api.coord([startTime, api.value(2)])
-							var height = api.size([0, duration])[1] * 0.6
-
-							return {
-								type: 'rect',
-								shape: {
-									x: rect[0],
-									y: rect[1] - height / 2,
-									width: rect[2] - rect[0],
-									height: height,
-								},
-								style: api.style(),
-							}
-						},
-						encode: {
-							x: [1, 2],
-							y: 0,
-							tooltip: [1, 2],
-						},
-						data: data.map(function (item) {
-							return [item.startTime, item.endTime, item.name]
-						}),
-					},
-				],
-			}
-
-			option && myChart.setOption(option)
-		},
-
-		//绘制睡眠详情图表
 		drawSleepChart() {
 			const shell = this.$refs.sleep
 			const chart = new Chart({
@@ -412,6 +401,103 @@ export default {
 				.tooltip(['start', 'end'])
 
 			chart.render()
+		},
+
+		//绘制体动详情图表
+		drawKinesiaChart() {
+			var chartDom = this.$refs.kinesia
+			var myChart = echarts.init(chartDom)
+			var option
+
+			option = {
+				tooltip: {
+					trigger: 'axis',
+					axisPointer: {
+						type: 'shadow',
+					},
+				},
+				grid: {
+					left: '3%',
+					right: '3%',
+					top: '3%',
+					bottom: '3%',
+					containLabel: true,
+				},
+				xAxis: [
+					{
+						type: 'category',
+						data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+						axisTick: {
+							alignWithLabel: true,
+						},
+					},
+				],
+				yAxis: [
+					{
+						type: 'value',
+					},
+				],
+				series: [
+					{
+						name: 'Direct',
+						type: 'bar',
+						barWidth: '60%',
+						data: [10, 52, 200, 334, 390, 330, 220],
+					},
+				],
+			}
+
+			option && myChart.setOption(option)
+		},
+
+		//绘制心率图表
+		drawHeartRateChart() {
+			var chartDom = this.$refs.heart
+			var myChart = echarts.init(chartDom)
+			var option
+
+			option = {
+				xAxis: {
+					type: 'category',
+					data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+				},
+				yAxis: {
+					type: 'value',
+				},
+				series: [
+					{
+						data: [150, 230, 224, 218, 135, 147, 260],
+						type: 'line',
+					},
+				],
+			}
+
+			option && myChart.setOption(option)
+		},
+
+		//绘制呼吸率图表
+		drawBreathChart() {
+			var chartDom = this.$refs.breath
+			var myChart = echarts.init(chartDom)
+			var option
+
+			option = {
+				xAxis: {
+					type: 'category',
+					data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+				},
+				yAxis: {
+					type: 'value',
+				},
+				series: [
+					{
+						data: [150, 230, 224, 218, 135, 147, 260],
+						type: 'line',
+					},
+				],
+			}
+
+			option && myChart.setOption(option)
 		},
 	},
 }
@@ -612,6 +698,11 @@ export default {
 
 				.sleep-chart {
 					height: 220px;
+					width: 100%;
+				}
+
+				.kinesia-chart {
+					height: 250px;
 					width: 100%;
 				}
 			}
