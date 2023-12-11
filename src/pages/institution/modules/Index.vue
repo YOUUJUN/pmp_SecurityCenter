@@ -13,9 +13,16 @@
 		<section class="panel-right">
 			<h2 class="panel-title">区域</h2>
 			<el-scrollbar class="scroll-wrap" style="height: 100%">
-				<div class="panel-right-wrap">
-					<AreaCard v-for="(item, index) in 15" :key="index" @click.native="openAreaDlg()"></AreaCard>
-				</div>
+				<!-- <div class="panel-right-wrap"> -->
+				<transition-group class="panel-right-wrap" name="list-complete" tag="div">
+					<AreaCard
+						v-for="(item, index) in dataList"
+						class="list-complete-item"
+						:key="item"
+						@click.native="openAreaDlg()"
+					></AreaCard>
+				</transition-group>
+				<!-- </div> -->
 			</el-scrollbar>
 		</section>
 
@@ -40,18 +47,41 @@ export default {
 	data() {
 		return {
 			visible: false,
+			dataList: [1, 2, 3],
 		}
 	},
 
-	mounted() {},
+	mounted() {
+		setInterval(() => {
+			this.add()
+		}, 1000)
+	},
 
 	methods: {
 		openAreaDlg() {
 			this.visible = true
 		},
+
+		add() {
+			this.dataList.splice(0, 0, Math.random())
+		},
 	},
 }
 </script>
+
+<style>
+.list-complete-item {
+	transition: all 1s;
+}
+.list-complete-enter,
+.list-complete-leave-to {
+	opacity: 0;
+	transform: translateX(90px);
+}
+.list-complete-leave-active {
+	position: absolute;
+}
+</style>
 
 <style lang="less" scoped>
 .panel-container {

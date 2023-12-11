@@ -20,6 +20,10 @@
 			<section class="dlg-body">
 				<div class="dlg-body-left">
 					<span class="dlg-body-title">检测仪已开启</span>
+					<div class="cursor-bar-wrap">
+						<CursorBar></CursorBar>
+						<CursorBar></CursorBar>
+					</div>
 					<div class="bar-chart" ref="bar"></div>
 				</div>
 				<div class="dlg-body-right">
@@ -141,6 +145,8 @@
 import * as echarts from 'echarts'
 import { Chart } from '@antv/g2'
 
+import CursorBar from '@/components/CursorBar/CursorBar.vue'
+
 export default {
 	props: {
 		visible: {
@@ -159,6 +165,10 @@ export default {
 			type: String,
 			default: '有人',
 		},
+	},
+
+	components: {
+		CursorBar,
 	},
 
 	data() {
@@ -230,6 +240,12 @@ export default {
 				},
 				legend: {
 					show: false,
+				},
+				grid: {
+					top: 0,
+					bottom: 0,
+					left: '5%',
+					right: '10%',
 				},
 				xAxis: {
 					type: 'category',
@@ -579,18 +595,34 @@ export default {
 			padding: 20px;
 
 			.dlg-body-title {
+				flex: none;
 				font-size: 17px;
 				font-family: PingFang SC;
 				font-weight: 500;
 				color: #333333;
+				margin-bottom: 12px;
 			}
 
 			.dlg-body-left {
+				display: flex;
+				flex-direction: column;
 				flex: auto;
 				height: 100%;
 				.bar-chart {
+					flex: auto;
 					width: 100%;
 					height: 100%;
+				}
+
+				.cursor-bar-wrap {
+					flex: none;
+					margin: 0 20px;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					& > div:last-child {
+						margin-left: 150px;
+					}
 				}
 			}
 
