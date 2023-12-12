@@ -31,6 +31,11 @@ import SideBar from '@/components/Layout/Parts/SideBar.vue'
 import Index from '../modules/Index.vue'
 import CategoryCtrl from '../modules/Ctrl/CategoryCtrl.vue'
 import TreeMenu from '../modules/TreeMenu.vue'
+
+import { mapActions, mapGetters } from 'vuex'
+
+import { getPerceptionPlatformData } from '@/api/security'
+
 export default {
 	components: {
 		LayoutVue,
@@ -43,6 +48,19 @@ export default {
 	},
 	data() {
 		return {}
+	},
+
+	created() {
+		this.fetchData()
+		getPerceptionPlatformData({
+			uid: 1,
+		}).then((res) => {
+			console.log('ok', res)
+		})
+	},
+
+	methods: {
+		...mapActions('data', ['fetchData']),
 	},
 }
 </script>

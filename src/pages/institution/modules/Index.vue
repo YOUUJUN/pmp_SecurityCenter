@@ -19,7 +19,7 @@
 						v-for="(item, index) in dataList"
 						class="list-complete-item"
 						:key="item"
-						@click.native="openAreaDlg()"
+						@click.native="openAreaDlg()" 
 					></AreaCard>
 				</transition-group>
 				<!-- </div> -->
