@@ -5,7 +5,7 @@
 
 			<el-scrollbar class="scroll-wrap" style="height: 100%">
 				<div class="panel-left-wrap">
-					<RoomCard v-for="(item, index) in 15" :key="index"></RoomCard>
+					<RoomCard v-for="(item, index) in roomData" :roomData="item" :key="index"></RoomCard>
 				</div>
 			</el-scrollbar>
 		</section>
@@ -19,7 +19,7 @@
 						v-for="(item, index) in dataList"
 						class="list-complete-item"
 						:key="item"
-						@click.native="openAreaDlg()" 
+						@click.native="openAreaDlg()"
 					></AreaCard>
 				</transition-group>
 				<!-- </div> -->
@@ -35,6 +35,8 @@ import RoomCard from '@/pages/institution/components/RoomCard.vue'
 import AreaCard from '@/pages/institution/components/AreaCard.vue'
 import AreaDetailDlg from '../components/AreaDetailDlg.vue'
 
+import { mapGetters } from 'vuex'
+
 export default {
 	name: 'SecurityCenterInstitutionIndex',
 
@@ -49,6 +51,10 @@ export default {
 			visible: false,
 			dataList: [1, 2, 3],
 		}
+	},
+
+	computed: {
+		...mapGetters(['roomData']),
 	},
 
 	mounted() {

@@ -1,7 +1,7 @@
 <template>
 	<el-tree
 		class="menu-wrap"
-		:data="data"
+		:data="menuData"
 		default-expand-all
 		node-key="id"
 		ref="tree"
@@ -19,36 +19,20 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
 	data() {
 		return {
-			data: [
-				{
-					id: 1,
-					label: 'XXX养老院',
-					children: [
-						{
-							id: 4,
-							label: '1栋',
-							children: [
-								{
-									id: 9,
-									label: '101房间',
-								},
-								{
-									id: 10,
-									label: '102房间',
-								},
-							],
-						},
-					],
-				},
-			],
 			defaultProps: {
-				children: 'children',
-				label: 'label',
+				children: 'items',
+				label: 'name',
 			},
 		}
+	},
+
+	computed: {
+		...mapGetters(['menuData']),
 	},
 
 	methods: {

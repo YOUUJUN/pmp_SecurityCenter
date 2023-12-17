@@ -4,43 +4,43 @@
 			<el-radio class="radio-btn" label="1" border>
 				<div class="ctrl-label-wrap">
 					<span>全部床位</span>
-					<span>{{ allDataNum }}</span>
+					<span>{{ bedCount }}</span>
 				</div>
 			</el-radio>
 			<el-radio class="radio-btn" label="2" border>
 				<div class="ctrl-label-wrap">
 					<span>空闲床位</span>
-					<span>{{ blankBedNum }}</span>
-				</div>
-			</el-radio>
-			<el-radio class="radio-btn" label="2" border>
-				<div class="ctrl-label-wrap">
-					<span>入住床位</span>
-					<span>{{ fullBedNum }}</span>
-				</div>
-			</el-radio>
-			<el-radio class="radio-btn" label="2" border>
-				<div class="ctrl-label-wrap">
-					<span>在床老人</span>
-					<span>{{ inBedNum }}</span>
+					<span>{{ emptyBedCount }}</span>
 				</div>
 			</el-radio>
 			<el-radio class="radio-btn" label="3" border>
 				<div class="ctrl-label-wrap">
-					<span>离床老人</span>
-					<span>{{ offBedNum }}</span>
+					<span>入住床位</span>
+					<span>{{ checkInCount }}</span>
+				</div>
+			</el-radio>
+			<el-radio class="radio-btn" label="4" border>
+				<div class="ctrl-label-wrap">
+					<span>在床老人</span>
+					<span>{{ onBedCount }}</span>
 				</div>
 			</el-radio>
 			<el-radio class="radio-btn" label="5" border>
 				<div class="ctrl-label-wrap">
-					<span>离线设备</span>
-					<span>{{ offlineDeviceNum }}</span>
+					<span>离床老人</span>
+					<span>{{ offBedCount }}</span>
 				</div>
 			</el-radio>
 			<el-radio class="radio-btn" label="6" border>
 				<div class="ctrl-label-wrap">
+					<span>离线设备</span>
+					<span>{{ offlineDeviceCount }}</span>
+				</div>
+			</el-radio>
+			<el-radio class="radio-btn" label="7" border>
+				<div class="ctrl-label-wrap">
 					<span>未处理告警</span>
-					<span>{{ alarmRoomNum }}</span>
+					<span>{{ unHandleWarnCount }}</span>
 				</div>
 			</el-radio>
 		</el-radio-group>
@@ -55,18 +55,20 @@ export default {
 		return {
 			ifDisplayEmptyBeds: true,
 			categoryRadio: 1,
-
-			allDataNum: 200,
-			blankBedNum: 0,
-			fullBedNum: 0,
-			inBedNum: 0,
-			offBedNum: 0,
-			offlineDeviceNum: 0,
-			alarmRoomNum: 0,
 		}
 	},
 
 	computed: {
+		...mapGetters([
+			'bedCount',
+			'emptyBedCount',
+			'checkInCount',
+			'onBedCount',
+			'offBedCount',
+			'offlineDeviceCount',
+			'unHandleWarnCount',
+		]),
+
 		// categoryRadio: {
 		// 	get() {
 		// 		return this.$store.state.display.displayCategory

@@ -13,6 +13,9 @@ SocketService.Instance.connect()
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
+//扩展date
+import '@/utils/global/dateExtend.js'
+
 Vue.use(ElementUI)
 
 Vue.config.productionTip = false
