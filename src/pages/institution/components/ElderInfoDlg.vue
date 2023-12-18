@@ -39,8 +39,13 @@
 
 					<div class="dlg-body-right-bottom">
 						<el-table class="dlg-table" :data="tableData" style="width: 100%">
-							<el-table-column prop="date" label="时间" align="center"></el-table-column>
-							<el-table-column prop="name" label="事件" align="center"></el-table-column>
+							<el-table-column
+								prop="alarm_time"
+								label="时间"
+								width="165px"
+								align="center"
+							></el-table-column>
+							<el-table-column prop="alarm_type" label="事件" align="center"></el-table-column>
 							<el-table-column prop="address" label="操作" align="center"></el-table-column>
 						</el-table>
 					</div>
@@ -50,7 +55,7 @@
 							class="table-pagging"
 							background
 							layout="prev, pager, next"
-							:total="1000"
+							:total="tableData.length"
 							small
 						></el-pagination>
 					</div>
@@ -62,7 +67,7 @@
 					<div class="chart-head-left">
 						<img src="~@/assets/images/monitor.png" class="chart-logo" />
 						<span class="chart-title">监测时段</span>
-						<span class="chart-desc">(睡眠时长8小时23分钟)</span>
+						<span class="chart-desc">(睡眠时长{{ totalSleepTime }})</span>
 					</div>
 				</div>
 
@@ -147,6 +152,8 @@ import { Chart } from '@antv/g2'
 
 import CursorBar from '@/components/CursorBar/CursorBar.vue'
 
+import { mapActions } from 'vuex'
+
 export default {
 	props: {
 		visible: {
@@ -196,6 +203,12 @@ export default {
 				},
 			],
 
+			//监测时段数据
+			MonitorData: {},
+
+			//监测时段总睡眠时长
+			totalSleepTime: '',
+
 			//选择的日期
 			choicedDate: '',
 		}
@@ -214,18 +227,37 @@ export default {
 	mounted() {},
 
 	methods: {
+		...mapActions('temp-data', ['getReportData']),
+
+		//绘制图表
+		renderInfo(payload) {
+			this.getReportData(payload).then((res) => {
+				const reportData = res
+				const { alarm_datas, monitor_period } = reportData
+				this.tableData = alarm_datas
+				this.MonitorData = monitor_period
+
+				this.drawHeartChart()
+				this.drawMonitorChart()
+				this.drawSleepChart()
+				this.drawKinesiaChart()
+				this.drawHeartRateChart()
+				this.drawBreathChart()
+			})
+		},
+
 		handleClose() {
 			this.$emit('update:visible', false)
 		},
 
 		//处理窗体打开
 		handleDlgOpen() {
-			this.drawHeartChart()
-			this.drawMonitorChart()
-			this.drawSleepChart()
-			this.drawKinesiaChart()
-			this.drawHeartRateChart()
-			this.drawBreathChart()
+			// this.drawHeartChart()
+			// this.drawMonitorChart()
+			// this.drawSleepChart()
+			// this.drawKinesiaChart()
+			// this.drawHeartRateChart()
+			// this.drawBreathChart()
 		},
 
 		//绘制呼吸心跳图
@@ -287,9 +319,75 @@ export default {
 		drawMonitorChart() {
 			var chartDom = this.$refs.monitor
 			var myChart = echarts.init(chartDom)
-			var option
 
-			option = {
+			const {
+				total,
+				deep_sleep,
+				light_sleep,
+				wake,
+				level_bed,
+				total_str,
+				deep_sleep_str,
+				light_sleep_str,
+				wake_str,
+				level_bed_str,
+			} = this.MonitorData
+
+			this.totalSleepTime = total_str
+
+			const processedData = Object.assign(
+				{},
+				{
+					deep_sleep,
+					light_sleep,
+					wake,
+					level_bed,
+				},
+			)
+
+			const series = Object.entries(processedData).map((item, index) => {
+				console.log('item', item)
+				const label = item[0]
+				const value = item[1]
+				let name = ''
+				console.log('value', value, total)
+				let data = [value / total]
+				switch (label) {
+					case 'deep_sleep':
+						name = `深睡${deep_sleep_str}`
+						break
+					case 'light_sleep':
+						name = `浅睡${light_sleep_str}`
+						break
+					case 'wake':
+						name = `清醒${wake_str}`
+						break
+					case 'level_bed':
+						name = `离床${level_bed_str}`
+						break
+				}
+
+				let obj = {
+					// name: '深睡',
+					name,
+					type: 'bar',
+					barWidth: 20,
+					stack: 'percent',
+					label: {
+						show: false,
+					},
+					emphasis: {
+						focus: 'series',
+					},
+					data,
+					// data: [25],
+				}
+				return obj
+			})
+
+			console.log('series', series)
+
+			let option = {
 				tooltip: {
 					trigger: 'axis',
 					axisPointer: {
@@ -316,57 +414,61 @@ export default {
 					show: false,
 					data: ['监测时段'],
 				},
-				series: [
-					{
-						name: '深睡',
-						type: 'bar',
-						barWidth: 20,
-						stack: 'percent',
-						label: {
-							show: true,
-						},
-						// emphasis: {
-						//   focus: 'series'
-						// },
-						data: [25],
-					},
-					{
-						name: '浅睡',
-						type: 'bar',
-						stack: 'percent',
-						label: {
-							show: true,
-						},
-						emphasis: {
-							focus: 'series',
-						},
-						data: [25],
-					},
-					{
-						name: '清醒',
-						type: 'bar',
-						stack: 'percent',
-						label: {
-							show: true,
-						},
-						emphasis: {
-							focus: 'series',
-						},
-						data: [25],
-					},
-					{
-						name: '离床',
-						type: 'bar',
-						stack: 'percent',
-						label: {
-							show: true,
-						},
-						emphasis: {
-							focus: 'series',
-						},
-						data: [25],
-					},
-				],
+				series,
+				// series: [
+				// 	{
+				// 		name: '深睡',
+				// 		type: 'bar',
+				// 		barWidth: 20,
+				// 		stack: 'percent',
+				// 		label: {
+				// 			show: true,
+				// 		},
+				// 		emphasis: {
+				// 			focus: 'series',
+				// 		},
+				// 		data: [25],
+				// 	},
+				// 	{
+				// 		name: '浅睡',
+				// 		type: 'bar',
+				// 		barWidth: 20,
+				// 		stack: 'percent',
+				// 		label: {
+				// 			show: true,
+				// 		},
+				// 		emphasis: {
+				// 			focus: 'series',
+				// 		},
+				// 		data: [25],
+				// 	},
+				// 	{
+				// 		name: '清醒',
+				// 		type: 'bar',
+				// 		barWidth: 20,
+				// 		stack: 'percent',
+				// 		label: {
+				// 			show: true,
+				// 		},
+				// 		emphasis: {
+				// 			focus: 'series',
+				// 		},
+				// 		data: [25],
+				// 	},
+				// 	{
+				// 		name: '离床',
+				// 		type: 'bar',
+				// 		barWidth: 20,
+				// 		stack: 'percent',
+				// 		label: {
+				// 			show: true,
+				// 		},
+				// 		emphasis: {
+				// 			focus: 'series',
+				// 		},
+				// 		data: [25],
+				// 	},
+				// ],
 			}
 
 			option && myChart.setOption(option)
