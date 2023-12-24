@@ -13,5 +13,9 @@ const getters = {
 	offBedCount: (state, getters) => getters.checkInCount - getters.onBedCount,
 	offlineDeviceCount: (state, getters) => getters.originData.offline,
 	unHandleWarnCount: (state, getters) => getters.originData.un_warn,
+
+	/*---socket 数据 ---*/
+
+	vitalIotData: (state) => state.socketData.vitalIotDataCache,
 }
 export default getters

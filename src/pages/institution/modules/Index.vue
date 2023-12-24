@@ -58,9 +58,9 @@ export default {
 	},
 
 	mounted() {
-		setInterval(() => {
-			this.add()
-		}, 1000)
+		// setInterval(() => {
+		// 	this.add()
+		// }, 1000)
 	},
 
 	methods: {

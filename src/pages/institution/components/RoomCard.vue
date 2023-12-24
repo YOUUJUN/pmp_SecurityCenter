@@ -21,7 +21,12 @@
 			</el-button>
 		</div>
 
-		<ElderInfoDlg :visible.sync="visible" ref="elderInfo"></ElderInfoDlg>
+		<ElderInfoDlg
+			v-if="renderElderInfoDlg"
+			:visible.sync="visibleElderInfoDlg"
+			ref="elderInfo"
+			:roomData="roomData"
+		></ElderInfoDlg>
 	</div>
 </template>
 
@@ -49,7 +54,8 @@ export default {
 
 	data() {
 		return {
-			visible: false,
+			renderElderInfoDlg: false,
+			visibleElderInfoDlg: false,
 
 			//数据获取中状态
 			loading: false,
@@ -59,21 +65,25 @@ export default {
 	mounted() {},
 
 	methods: {
-		...mapActions('temp-data', ['getReportData']),
+		...mapActions('tempData', ['getReportData']),
 
 		handleOpenElderDlg(elderId) {
 			const currentTime = new Date().Format('yyyy-MM-dd')
-
 			this.loading = true
 			this.getReportData({
 				elderId,
 				reportDate: currentTime,
 			})
 				.then((res) => {
-					this.visible = true
-					this.$refs.elderInfo.renderInfo({
-						elderId,
-						reportDate: currentTime,
+					console.log('ok22')
+
+					this.renderElderInfoDlg = true
+					this.$nextTick(() => {
+						this.visibleElderInfoDlg = true
+						this.$refs.elderInfo.renderInfo({
+							elderId,
+							reportDate: currentTime,
+						})
 					})
 				})
 				.catch((err) => {})

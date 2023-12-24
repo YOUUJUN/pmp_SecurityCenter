@@ -50,10 +50,13 @@ export default {
 
 	created() {
 		this.fetchData()
+
+		this.initSocketData()
 	},
 
 	methods: {
 		...mapActions('data', ['fetchData']),
+		...mapActions('socketData', ['initSocketData']),
 	},
 }
 </script>

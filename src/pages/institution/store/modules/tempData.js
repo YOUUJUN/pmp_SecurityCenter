@@ -6063,7 +6063,7 @@ const actions = {
 
 							resolve(data)
 						}
-					}, 1000)
+					}, 400)
 				})
 			}
 		})

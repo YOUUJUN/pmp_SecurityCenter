@@ -1,5 +1,5 @@
 <template>
-	<el-dialog class="dlg" :visible="visible" @close="handleClose" @opened="handleDlgOpen">
+	<el-dialog class="dlg" :visible="visible" @close="handleClose" @opened="handleDlgOpen" zIndex="2">
 		<template slot="title">
 			<div class="dlg-title-wrap">
 				<div class="dlg-title-left">
@@ -21,8 +21,8 @@
 				<div class="dlg-body-left">
 					<span class="dlg-body-title">检测仪已开启</span>
 					<div class="cursor-bar-wrap">
-						<CursorBar></CursorBar>
-						<CursorBar></CursorBar>
+						<CursorBar :value="breathValue" type="breath"></CursorBar>
+						<CursorBar :value="heartValue" type="heart"></CursorBar>
 					</div>
 					<div class="bar-chart" ref="bar"></div>
 				</div>
@@ -62,7 +62,9 @@
 				</div>
 			</section>
 
-			<section class="chart-container">
+			<HealthReport></HealthReport>
+
+			<!-- <section class="chart-container">
 				<div class="chart-head">
 					<div class="chart-head-left">
 						<img src="~@/assets/images/monitor.png" class="chart-logo" />
@@ -142,7 +144,7 @@
 				<div class="chart-body">
 					<div class="apnea-chart" ref="apnea"></div>
 				</div>
-			</section>
+			</section> -->
 		</article>
 	</el-dialog>
 </template>
@@ -151,10 +153,16 @@ import * as echarts from 'echarts'
 import { Chart } from '@antv/g2'
 
 import CursorBar from '@/components/CursorBar/CursorBar.vue'
+import HealthReport from './ElderInfoParts/HealthReport.vue'
 
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
+	components: {
+		CursorBar,
+		HealthReport,
+	},
+
 	props: {
 		visible: {
 			type: Boolean,
@@ -172,14 +180,23 @@ export default {
 			type: String,
 			default: '有人',
 		},
-	},
 
-	components: {
-		CursorBar,
+		roomData: {
+			type: Object,
+			default() {
+				return {}
+			},
+		},
 	},
 
 	data() {
 		return {
+			breathValue: 0,
+			heartValue: 0,
+
+			//呼吸心跳图表
+			heartBreathChart: null,
+
 			tableData: [
 				{
 					date: '2016-05-02',
@@ -214,6 +231,10 @@ export default {
 		}
 	},
 
+	computed: {
+		...mapGetters(['vitalIotData']),
+	},
+
 	watch: {
 		visible: {
 			handler(newValue) {
@@ -222,48 +243,75 @@ export default {
 				}
 			},
 		},
+
+		vitalIotData: {
+			deep: true,
+			immediate: true,
+			handler(newValue, oldValue) {
+				const { elderly_id } = this.roomData
+				const newVitalData = newValue?.[elderly_id]
+				if (newVitalData) {
+					const { breathing, heart } = newVitalData[newVitalData.length - 1]
+					this.breathValue = breathing
+					this.heartValue = heart
+
+					this.heartBreathChart && this.updateHeartChart()
+				}
+			},
+		},
 	},
 
 	mounted() {},
 
 	methods: {
-		...mapActions('temp-data', ['getReportData']),
+		...mapActions('tempData', ['getReportData']),
 
 		//绘制图表
 		renderInfo(payload) {
 			this.getReportData(payload).then((res) => {
 				const reportData = res
 				const { alarm_datas, monitor_period } = reportData
-				this.tableData = alarm_datas
+				// this.tableData = alarm_datas
 				this.MonitorData = monitor_period
 
 				this.drawHeartChart()
-				this.drawMonitorChart()
-				this.drawSleepChart()
-				this.drawKinesiaChart()
-				this.drawHeartRateChart()
-				this.drawBreathChart()
+				// this.drawMonitorChart()
+				// this.drawSleepChart()
+				// this.drawKinesiaChart()
+				// this.drawHeartRateChart()
+				// this.drawBreathChart()
 			})
 		},
 
 		handleClose() {
+			console.log('close dlg')
 			this.$emit('update:visible', false)
 		},
 
 		//处理窗体打开
-		handleDlgOpen() {
-			// this.drawHeartChart()
-			// this.drawMonitorChart()
-			// this.drawSleepChart()
-			// this.drawKinesiaChart()
-			// this.drawHeartRateChart()
-			// this.drawBreathChart()
-		},
+		handleDlgOpen() {},
 
 		//绘制呼吸心跳图
 		drawHeartChart() {
+			const { elderly_id } = this.roomData
+			const originData = this.vitalIotData[elderly_id] || []
+			const xData = originData.map((value, index) => {
+				let { date } = value
+				return date
+			})
+
+			const heartData = originData.map((value, index) => {
+				let { heart } = value
+				return heart
+			})
+
+			const breathData = originData.map((value, index) => {
+				let { breathing } = value
+				return breathing
+			})
+
 			var chartDom = this.$refs.bar
-			var myChart = echarts.init(chartDom)
+			this.heartBreathChart = echarts.init(chartDom)
 			var option
 
 			option = {
@@ -283,7 +331,8 @@ export default {
 					type: 'category',
 					show: false,
 					boundaryGap: false,
-					data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+					// data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+					data: xData,
 				},
 				yAxis: {
 					type: 'value',
@@ -295,7 +344,8 @@ export default {
 						type: 'line',
 						smooth: true,
 						showSymbol: false,
-						data: [10, 11, 13, 11, 12, 12, 9],
+						// data: [10, 11, 13, 11, 12, 12, 9],
+						data: breathData,
 						markLine: {
 							data: [{ type: 'average', name: 'Avg' }],
 						},
@@ -304,7 +354,8 @@ export default {
 						name: '心率',
 						type: 'line',
 						showSymbol: false,
-						data: [1, -2, 2, 5, 3, 2, 0],
+						// data: [1, -2, 2, 5, 3, 2, 0],
+						data: heartData,
 						markLine: {
 							data: [{ type: 'average', name: 'Avg' }],
 						},
@@ -312,7 +363,44 @@ export default {
 				],
 			}
 
-			option && myChart.setOption(option)
+			option && this.heartBreathChart.setOption(option)
+		},
+
+		//更新呼吸心跳图数据
+		updateHeartChart() {
+			const { elderly_id } = this.roomData
+			const originData = this.vitalIotData[elderly_id] || []
+			const xData = originData.map((value, index) => {
+				let { date } = value
+				return date
+			})
+
+			const heartData = originData.map((value, index) => {
+				let { heart } = value
+				return heart
+			})
+
+			const breathData = originData.map((value, index) => {
+				let { breathing } = value
+				return breathing
+			})
+
+			this.heartBreathChart.setOption({
+				xAxis: {
+					data: xData,
+				},
+
+				series: [
+					{
+						name: '呼吸',
+						data: breathData,
+					},
+					{
+						name: '心率',
+						data: heartData,
+					},
+				],
+			})
 		},
 
 		//绘制监测时段图表
@@ -617,6 +705,11 @@ export default {
 
 			option && myChart.setOption(option)
 		},
+
+		test() {
+			console.log('vitalIotData', this.vitalIotData)
+			console.log('this.$store.state', this.$store.state)
+		},
 	},
 }
 </script>
@@ -689,12 +782,13 @@ export default {
 	}
 
 	.main-body {
+		padding: 20px;
 		.dlg-body {
 			display: flex;
 			flex-direction: row;
 			align-items: center;
 			height: 400px;
-			padding: 20px;
+			margin-bottom: 16px;
 
 			.dlg-body-title {
 				flex: none;

@@ -1,4 +1,5 @@
-const wsURL = process.env.VUE_APP_API_SOCKET_URL
+// const wsURL = process.env.VUE_APP_API_SOCKET_URL
+const wsURL = 'ws://101.43.47.233:8606/chat'
 
 class HeartCheck {
 	ws = null

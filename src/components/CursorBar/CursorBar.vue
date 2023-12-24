@@ -6,9 +6,10 @@
 			<div class="line-right"></div>
 			<div class="cursor-box">
 				<div class="cursor-box-top">
-					<img class="cursor-icon" src="~@/assets/images/heart.png" />
+					<img v-if="type === 'heart'" class="cursor-icon" src="~@/assets/images/heart.png" />
+					<img v-if="type === 'breath'" class="cursor-icon" src="~@/assets/images/breath.png" />
 					<span>呼吸：</span>
-					<span>4</span>
+					<span>{{ value }}</span>
 				</div>
 				<div class="cursor-box-bottom">
 					<div class="cursor-point"></div>
@@ -24,7 +25,17 @@
 </template>
 <script>
 export default {
-	props: {},
+	props: {
+		value: {
+			type: Number,
+			default: 0,
+		},
+
+		type: {
+			type: String,
+			default: 'heart',
+		},
+	},
 	data() {
 		return {}
 	},
