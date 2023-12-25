@@ -62,7 +62,7 @@
 				</div>
 			</section>
 
-			<HealthReport></HealthReport>
+			<HealthReport :partnerId="partner_id" :sleepReportData="sleepReportData"></HealthReport>
 
 			<!-- <section class="chart-container">
 				<div class="chart-head">
@@ -157,6 +157,8 @@ import HealthReport from './ElderInfoParts/HealthReport.vue'
 
 import { mapActions, mapGetters } from 'vuex'
 
+import moment from 'moment'
+
 export default {
 	components: {
 		CursorBar,
@@ -228,6 +230,10 @@ export default {
 
 			//选择的日期
 			choicedDate: '',
+
+			partner_id: this.roomData.elderly_id,
+
+			sleepReportData: moment().format('YYYY-MM-DD'),
 		}
 	},
 

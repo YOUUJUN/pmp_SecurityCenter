@@ -1,13 +1,176 @@
 <template>
 	<article>
-		<DialogHead></DialogHead>
+		<DialogHead :title="title" @modeChage="modeChage" :badgeDate="badgeDate"></DialogHead>
+		<div class="report-header">
+			<div v-if="mode === 1 && showReport" class="report-content" style="width: 100%" id="mode1">
+				<DialogTittle title="睡眠指标" src="~@/assets/images/sleepReport/sleepIndex.png"></DialogTittle>
+
+				<div class="sleepIndex-content">
+					<div class="content-left">
+						<div class="dialog-card">
+							<DialogCard
+								v-for="item in sleepInData"
+								:key="item.indexName"
+								:sleepItem="item"
+							></DialogCard>
+						</div>
+					</div>
+					<div id="content-right" class="content-right">
+						<round :sleepIndicatorsInfo="sleepIndicatorsInfo"></round>
+						<div class="score-ranking">
+							{{ scheduleData.sleepProportion }}
+						</div>
+						<div class="content-bottom">
+							<div class="botTime">
+								<div class="tCont">
+									<div class="tCont_align">
+										<div class="tPoint"></div>
+										<div class="tCont_font">上床时间：{{ scheduleData.getBedIdx }}</div>
+									</div>
+								</div>
+								<div class="tCont">
+									<div class="tCont_align">
+										<div class="tPoint"></div>
+										<div class="tCont_font">入睡时间：{{ scheduleData.sleepStIdx }}</div>
+									</div>
+								</div>
+								<div class="tCont">
+									<div class="tCont_align">
+										<div class="tPoint"></div>
+										<div class="tCont_font">醒来时间：{{ scheduleData.sleepEdIdx }}</div>
+									</div>
+								</div>
+								<div class="tCont" style="border: none">
+									<div class="tCont_align">
+										<div class="tPoint"></div>
+										<div class="tCont_font">起床时间：{{ scheduleData.leaveBedIdx }}</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!--睡眠异常-->
+				<div class="dataTitle">
+					<div class="">
+						<div class="comment-details-indexs">
+							<div v-for="(item, index) in Abnormal_list" :key="index">
+								<div class="comment-details-item is-alarm">
+									<div class="comment-details-item-box">
+										<div class="details-title">
+											<div class="details-title-icon" style="width: 1rem; height: 1rem">
+												<img src="~@/assets/images/sleepReport/th.png" alt="" srcset="" />
+											</div>
+											<div style="margin-right: 0.5rem; margin-left: 1.5rem; font-weight: 600">
+												{{ item.indexName }}
+											</div>
+											<div class="details-title-num">
+												{{ item.normalFlagTips }}
+											</div>
+										</div>
+										<!-- <div class="details-title ml24">
+                        <div>连续</div>
+                        <div class="details-title-num">3</div>
+                        <div>晚睡眠时长小于6小时</div>
+                      </div> -->
+										<div class="ml24 details-consult" style="margin-left: 45px">
+											{{ item.reference }}
+										</div>
+										<el-collapse v-model="activeNames">
+											<el-collapse-item
+												title="详细解读"
+												name="1"
+												style="padding-left: 1rem; color: #9094a6 !important"
+											>
+												<div class="detailed-inter" style="height: 100%">
+													<div class="detailed-inter-title"></div>
+													<div>
+														<div class="detailstr-circle">
+															{{ item.Accord }}
+														</div>
+														<div class="detailstr-circle">
+															{{ item.Proposal }}
+														</div>
+													</div>
+												</div>
+											</el-collapse-item>
+										</el-collapse>
+									</div>
+								</div>
+							</div>
+							<div></div>
+						</div>
+					</div>
+				</div>
+
+				<div class="sleepIndex-title">
+					<img
+						src="~@/assets/images/sleepReport/breatheIndex.png"
+						alt=""
+						srcset=""
+						style="width: 3rem; height: 3rem"
+					/>
+					<span style="padding-left: 1rem">呼吸详情</span>
+				</div>
+
+				<div class="sleepIndex-content">
+					<BreatheIndexCard :respiratoryDetails="respiratoryDetails" />
+				</div>
+
+				<div class="sleepIndex-title">
+					<img
+						src="~@/assets/images/sleepReport/smxq.png"
+						alt=""
+						srcset=""
+						style="width: 3rem; height: 3rem"
+					/>
+					<span>睡眠详情</span>
+				</div>
+				<div class="sleepIndex-content">
+					<SleepDetails
+						:sleepDetails="sleepDetails"
+						:breathRateVo="breathRateVo"
+						:heartRateVo="heartRateVo"
+						:turnOverIndex="turnOverIndex"
+					/>
+				</div>
+			</div>
+			<div v-if="mode === 2" id="mode2" class="report-content" style="width: 100%">
+				<seven-report-sleep-indices
+					key="2"
+					days="7"
+					:partnerIdSeven="partnerIdSeven"
+					:sleepReportDataSeven="sleepReportDataSeven"
+				></seven-report-sleep-indices>
+			</div>
+			<div v-if="mode === 3" id="mode3" class="report-content" style="width: 100%">
+				<more-days
+					key="3"
+					days="30"
+					:partnerIdSeven="partnerIdSeven"
+					:sleepReportDataSeven="sleepReportDataSeven"
+				></more-days>
+			</div>
+			<div v-if="!showReport && mode === 1">
+				<div style="margin-left: 32rem">
+					<img
+						src="http://health.qingleitech.com/img/image_middle_empty_d@2x.1c9159e9.png"
+						class="empty-img"
+						style="padding-left: 5rem"
+					/>
+					<div style="width: 100%; text-align: center; font-size: 2rem; color: #909399">
+						{{ errorMsg }}
+					</div>
+				</div>
+			</div>
+		</div>
 	</article>
 </template>
 <script>
 import * as echarts from 'echarts'
 import moment from 'moment'
 
-import { handelDayReport, getElderlyHealthReportDate } from '@/api/security.js'
+import { handelDayReport, getElderlyHealthReport, getElderlyHealthReportDate } from '@/api/security.js'
 import DialogHead from './DialogHead.vue'
 import SleepIndexCard from './SleepIndexCard.vue'
 import BreatheIndexCard from './BreatheIndexCard.vue'
@@ -22,17 +185,228 @@ export default {
 
 	components: {
 		DialogHead,
-		SleepIndexCard,
+		// SleepIndexCard,
 		BreatheIndexCard,
 		SleepDetails,
 		DialogTittle,
 		Round,
 		SevenReportSleepIndices,
+		DialogCard,
 		MoreDays,
 	},
 
+	props: {
+		sleepReportData: {
+			type: String,
+			default: '',
+		},
+
+		visible: {
+			type: Boolean,
+			default: false,
+		},
+
+		partnerId: {
+			type: Number,
+			required: true,
+		},
+	},
+	created() {},
+	mounted() {
+		this.handelDayReport(this.partnerId, this.sleepReportData)
+		const yearMonth = moment(this.sleepReportData).format('YYYY-MM')
+		this.monthChange(yearMonth)
+	},
+	watch: {
+		visible(value) {
+			if (value) {
+				this.dialogVisible = value
+				this.handelDayReport(this.partnerId, this.sleepReportData)
+				const yearMonth = moment(this.sleepReportData).format('YYYY-MM')
+				this.monthChange(yearMonth)
+			}
+		},
+	},
 	data() {
-		return {}
+		return {
+			activeNames: [],
+			title: '', // 弹窗标题
+			sleepInData: [],
+			scheduleData: {},
+			Abnormal_list: [],
+			mode: 1,
+			currentTab: 0,
+			placeholderName: '11月11日',
+			activeName: 'first',
+			dialogVisible: false,
+			isFirst: true,
+			badgeDate: [],
+			//报告搜索日期
+			reportDate: '',
+
+			//报告渲染数据
+			renderData: {},
+			ableVisible: false,
+			respiratoryDetails: {},
+			sleepDetails: {},
+			breathRateVo: {},
+			heartRateVo: {},
+			turnOverIndex: {},
+			myChartRound: '',
+			option: '',
+			sleepIndicatorsInfo: {},
+			partnerIdSeven: 0,
+			sleepReportDataSeven: '',
+			showReport: false,
+			errorMsg: '',
+		}
+	},
+	methods: {
+		async handelDayReport(id, data) {
+			this.partnerIdSeven = this.partnerId
+			this.sleepReportDataSeven = this.sleepReportData
+			await handelDayReport({
+				partner_id: id,
+				search_report: data,
+			}).then(
+				(res) => {
+					console.log('res12', res)
+					// return;
+					if (res.status === 200 && res.data.result === 'success') {
+						this.showReport = true
+						let {
+							title,
+							sleepIndicators,
+							respiratoryDetails,
+							sleepDetails,
+							breathRateVo,
+							heartRateVo,
+							turnOverIndex,
+						} = res?.data?.data
+						this.title = title
+						let {
+							sleepInData,
+							getBedIdx,
+							sleepStIdx,
+							sleepEdIdx,
+							leaveBedIdx,
+							Score,
+							scoreLabel,
+							sleepProportion,
+							Abnormal_list,
+						} = sleepIndicators
+						this.sleepInData = sleepInData
+						this.scheduleData.getBedIdx = getBedIdx
+						this.scheduleData.sleepStIdx = sleepStIdx
+						this.scheduleData.sleepEdIdx = sleepEdIdx
+						this.scheduleData.leaveBedIdx = leaveBedIdx
+						this.scheduleData.scoreLabel = scoreLabel
+						this.scheduleData.Score = Score
+						this.scheduleData.sleepProportion = sleepProportion
+						this.Abnormal_list = Abnormal_list
+						this.sleepDetails = sleepDetails
+						this.respiratoryDetails = respiratoryDetails
+						this.breathRateVo = breathRateVo
+						this.heartRateVo = heartRateVo
+						this.turnOverIndex = turnOverIndex
+						this.sleepIndicatorsInfo = sleepIndicators
+					} else {
+						this.errorMsg = res.data.message
+						this.showReport = false
+					}
+					console.log(res)
+				},
+				(error) => {
+					console.log('报错===' + error)
+				},
+			)
+		},
+		modeChage(mode, date) {
+			this.mode = mode
+			if (mode === 1) {
+				this.handelDayReport(this.partnerId, date)
+			}
+		},
+		entry(index) {
+			const eleName = 'tab-' + index
+			const ele = document.getElementById(eleName)
+			if (!ele.classList.contains('active')) {
+				ele.classList.add('actives')
+			}
+		},
+		leave(index) {
+			const eleName = 'tab-' + index
+			const ele = document.getElementById(eleName)
+			if (!ele.classList.contains('active')) {
+				ele.classList.remove('actives')
+			}
+		},
+		entryReportDig() {
+			console.log('111')
+			this.showDatePicker()
+		},
+		showDatePicker() {
+			this.$refs.datePicker.$el.querySelector('input').click()
+		},
+		//设置报告日期
+		setReportDate(date) {
+			this.reportDate = date
+		},
+		// 切换年月后重新调接口
+		async monthChange(datesYearMonth) {
+			const { data } = await getElderlyHealthReportDate({
+				month_date: datesYearMonth,
+				elderly_id: this.partnerId,
+				mark: 'ql',
+			})
+			if (data && data.result === 'success') {
+				this.badgeDate = data.data
+			} else {
+				this.badgeDate = []
+			}
+		},
+
+		//获取报告数据
+		fetchReport(date) {
+			console.log('date', date)
+			return new Promise((resolve, reject) => {
+				this.fetchElderHealthReportByTime(this.partnerId, date)
+					.then((res) => {
+						console.log('res-->', res)
+						if (res.status === 200) {
+							this.renderData = res.data?.data[0] ?? {}
+							resolve()
+						}
+					})
+					.catch((err) => {
+						console.warn('err', err)
+					})
+			})
+		},
+
+		handleClose() {
+			// this.isFirst = true;
+			this.badgeDate = []
+			this.$emit('update:visible', false)
+			// console.log(1112);
+		},
+		handleClick(tab, event) {
+			console.log(tab.index)
+			console.log(event)
+		},
+		cancel() {
+			this.dialogVisible = false
+			this.$emit('cancel', this.dialogVisible)
+			console.group('onCancel====', this.dialogVisible)
+		},
+
+		//通过时间获取老人健康报告信息
+		fetchElderHealthReportByTime(id, date = moment().subtract(1, 'days').format('YYYY-MM-DD')) {
+			return getElderlyHealthReport({
+				partner_id: id,
+				report_date: date,
+			})
+		},
 	},
 }
 </script>

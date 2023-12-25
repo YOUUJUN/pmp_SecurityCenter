@@ -553,8 +553,8 @@ export default {
 			required: true,
 		},
 		sleepReportDataSeven: {
-			type: Boolean,
-			default: false,
+			type: String,
+			default: '',
 		},
 	},
 	data() {
@@ -2187,8 +2187,8 @@ export default {
 			this.partnerIdMore = this.partnerIdSeven
 			this.sleepReportDataMore = document.getElementById('margin-five').innerText
 			await handelSevenDayReport({
-				partner_id: this.partnerIdMore,
-				search_report: this.sleepReportDataMore,
+				elderly_id: this.partnerIdMore,
+				search_date: this.sleepReportDataMore,
 				days: '30',
 			})
 				.then(
