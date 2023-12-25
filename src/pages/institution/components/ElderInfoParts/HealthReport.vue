@@ -167,12 +167,10 @@
 	</article>
 </template>
 <script>
-import * as echarts from 'echarts'
 import moment from 'moment'
 
-import { handelDayReport, getElderlyHealthReport, getElderlyHealthReportDate } from '@/api/security.js'
+import { getElderlyHealthReport, getElderlyHealthReportDate } from '@/api/security.js'
 import DialogHead from './DialogHead.vue'
-import SleepIndexCard from './SleepIndexCard.vue'
 import BreatheIndexCard from './BreatheIndexCard.vue'
 import SleepDetails from './SleepDetails.vue'
 import DialogTittle from './DialogTittle.vue'
@@ -180,12 +178,14 @@ import Round from './Round.vue'
 import SevenReportSleepIndices from './SevenReportSleepIndices.vue'
 import DialogCard from './DialogCard.vue'
 import MoreDays from './MoreDays.vue'
+
+import { mapActions } from 'vuex'
+
 export default {
 	name: 'HealthReport',
 
 	components: {
 		DialogHead,
-		// SleepIndexCard,
 		BreatheIndexCard,
 		SleepDetails,
 		DialogTittle,
@@ -217,16 +217,6 @@ export default {
 		const yearMonth = moment(this.sleepReportData).format('YYYY-MM')
 		this.monthChange(yearMonth)
 	},
-	watch: {
-		visible(value) {
-			if (value) {
-				this.dialogVisible = value
-				this.handelDayReport(this.partnerId, this.sleepReportData)
-				const yearMonth = moment(this.sleepReportData).format('YYYY-MM')
-				this.monthChange(yearMonth)
-			}
-		},
-	},
 	data() {
 		return {
 			activeNames: [],
@@ -238,7 +228,6 @@ export default {
 			currentTab: 0,
 			placeholderName: '11月11日',
 			activeName: 'first',
-			dialogVisible: false,
 			isFirst: true,
 			badgeDate: [],
 			//报告搜索日期
@@ -262,17 +251,18 @@ export default {
 		}
 	},
 	methods: {
+		...mapActions('tempData', ['getReportData']),
+
 		async handelDayReport(id, data) {
 			this.partnerIdSeven = this.partnerId
 			this.sleepReportDataSeven = this.sleepReportData
-			await handelDayReport({
-				partner_id: id,
-				search_report: data,
+			await this.getReportData({
+				elderId: id,
+				reportDate: data,
 			}).then(
 				(res) => {
 					console.log('res12', res)
-					// return;
-					if (res.status === 200 && res.data.result === 'success') {
+					if (res.result === 'success') {
 						this.showReport = true
 						let {
 							title,
@@ -282,7 +272,7 @@ export default {
 							breathRateVo,
 							heartRateVo,
 							turnOverIndex,
-						} = res?.data?.data
+						} = res?.data
 						this.title = title
 						let {
 							sleepInData,
@@ -311,10 +301,9 @@ export default {
 						this.turnOverIndex = turnOverIndex
 						this.sleepIndicatorsInfo = sleepIndicators
 					} else {
-						this.errorMsg = res.data.message
+						this.errorMsg = res.message
 						this.showReport = false
 					}
-					console.log(res)
 				},
 				(error) => {
 					console.log('报错===' + error)
@@ -393,11 +382,6 @@ export default {
 		handleClick(tab, event) {
 			console.log(tab.index)
 			console.log(event)
-		},
-		cancel() {
-			this.dialogVisible = false
-			this.$emit('cancel', this.dialogVisible)
-			console.group('onCancel====', this.dialogVisible)
 		},
 
 		//通过时间获取老人健康报告信息

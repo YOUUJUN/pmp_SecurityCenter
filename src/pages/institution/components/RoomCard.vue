@@ -75,8 +75,6 @@ export default {
 				reportDate: currentTime,
 			})
 				.then((res) => {
-					console.log('ok22')
-
 					this.renderElderInfoDlg = true
 					this.$nextTick(() => {
 						this.visibleElderInfoDlg = true

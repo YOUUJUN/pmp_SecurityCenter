@@ -9,21 +9,21 @@ export const getPerceptionPlatformData = (params) => getAction('/inst/security/m
 
 // 获取健康报告数据接口
 export function handelDayReport(params) {
-	// return request({
-	// 	url: `/public/elderly/oneday/report/analysis`,
-	// 	method: 'post',
-	// 	data: qs.stringify(params),
-	// 	headers: {
-	// 		'content-type': 'application/x-www-form-urlencoded',
-	// 	},
-	// })
-
-	return new Promise((resolve) => {
-		resolve({
-			status: 200,
-			data: reportJson,
-		})
+	return request({
+		url: `/public/elderly/oneday/report/analysis`,
+		method: 'post',
+		data: qs.stringify(params),
+		headers: {
+			'content-type': 'application/x-www-form-urlencoded',
+		},
 	})
+
+	// return new Promise((resolve) => {
+	// 	resolve({
+	// 		status: 200,
+	// 		data: reportJson,
+	// 	})
+	// })
 }
 
 //获取老人健康报告

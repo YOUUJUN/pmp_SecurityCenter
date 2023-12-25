@@ -61,6 +61,8 @@ export default {
 	position: relative;
 	padding: 10px 0;
 	font-weight: 600;
+	margin-right: 1rem;
+  	margin-bottom: 1rem;
 }
 
 .ml10 {
