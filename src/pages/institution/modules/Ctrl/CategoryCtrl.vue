@@ -54,7 +54,6 @@ export default {
 	data() {
 		return {
 			ifDisplayEmptyBeds: true,
-			categoryRadio: 1,
 		}
 	},
 
@@ -69,22 +68,18 @@ export default {
 			'unHandleWarnCount',
 		]),
 
-		// categoryRadio: {
-		// 	get() {
-		// 		return this.$store.state.display.displayCategory
-		// 	},
-		// 	set(value) {
-		// 		this.changeDisplayCategory(value)
-		// 	},
-		// },
+		categoryRadio: {
+			get() {
+				return this.$store.state.display.displayCategory
+			},
+			set(value) {
+				this.changeDisplayCategory(value)
+			},
+		},
 	},
 
 	methods: {
-		...mapActions('display', ['changeDisplayCategory', 'changeEmptyBedsDisplay']),
-		//控制空床位显示隐藏
-		handleEmptyBedsDisplay(value) {
-			// this.changeEmptyBedsDisplay(value)
-		},
+		...mapActions('display', ['changeDisplayCategory']),
 	},
 }
 </script>

@@ -5,7 +5,7 @@
 			<span class="card-name">{{ roomData.name }}</span>
 			<el-button class="card-num" type="danger" circle size="mini">30s</el-button>
 		</div>
-		<ul class="card-middle">
+		<ul class="card-middle" v-if="roomData.elderly_id">
 			<li class="card-item">
 				<span class="card-item-left">状态</span>
 				<span class="card-item-right">{{ roomData.status }}</span>
@@ -15,10 +15,15 @@
 				<span class="card-item-right">{{ roomData.warn_text }}</span>
 			</li>
 		</ul>
-		<div class="card-bottom">
+		<div class="card-bottom" v-if="roomData.elderly_id">
 			<el-button class="card-btn" plain @click="handleOpenElderDlg(roomData.elderly_id)" :loading="loading">
 				查看详情
 			</el-button>
+		</div>
+
+		<div class="card-empty-wrap" v-if="!roomData.elderly_id">
+			<img class="card-empty-img" src="~@/assets/images/empty_bed.png" />
+			<span class="card-empty-name">空闲床位</span>
 		</div>
 
 		<ElderInfoDlg
@@ -150,6 +155,26 @@ export default {
 			width: 100%;
 			justify-content: space-between;
 			align-items: center;
+		}
+	}
+
+	.card-empty-wrap {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 100%;
+		height: 100%;
+		.card-empty-img {
+			width: 60px;
+			height: 47px;
+			margin: 40px 0 30px;
+		}
+
+		.card-empty-name {
+			font-size: 18px;
+			font-family: PingFang SC;
+			font-weight: bold;
+			color: #999999;
 		}
 	}
 

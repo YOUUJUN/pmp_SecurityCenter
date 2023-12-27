@@ -11,16 +11,14 @@ const state = {
 	 */
 	displayCategory: '1',
 	displayCategoryMap: new Map([
-		['1', '全部'],
-		['2', '在床'],
-		['3', '离床'],
-		['4', '告警'],
-		['5', '设备离线'],
-		['6', '房间告警'],
+		['1', '全部床位'],
+		['2', '空闲床位'],
+		['3', '入住床位'],
+		['4', '在床老人'],
+		['5', '离床老人'],
+		['6', '离线设备'],
+		['7', '未处理告警'],
 	]),
-
-	//是否显示空床位
-	ifDisplayEmptyBeds: false,
 }
 
 const mutations = {
@@ -31,10 +29,6 @@ const mutations = {
 	CHANGE_DISPLAY_CATEGORY(state, payload) {
 		state.displayCategory = payload
 	},
-
-	CHANGE_EMPTY_BEDS_DISPLAY(state, payload) {
-		state.ifDisplayEmptyBeds = payload
-	},
 }
 
 const actions = {
@@ -44,11 +38,6 @@ const actions = {
 
 	changeDisplayCategory({ commit }, payload) {
 		commit('CHANGE_DISPLAY_CATEGORY', payload)
-	},
-
-	//控制是否显示空床位
-	changeEmptyBedsDisplay({ commit }, payload) {
-		commit('CHANGE_EMPTY_BEDS_DISPLAY', payload)
 	},
 }
 

@@ -15,7 +15,13 @@ const getters = {
 	unHandleWarnCount: (state, getters) => getters.originData.un_warn,
 
 	/*---socket 数据 ---*/
-
 	vitalIotData: (state) => state.socketData.vitalIotDataCache,
+
+	/*---渲染条件控制---*/
+	displayCategory: (state) => state.display.displayCategory,
+	displayCategoryMap: (state) => state.display.displayCategoryMap,
+	displayCategoryLabel: (state, getters) => getters.displayCategoryMap.get(getters.displayCategory),
+
+	/*---菜单过滤后的数据---*/
 }
 export default getters
