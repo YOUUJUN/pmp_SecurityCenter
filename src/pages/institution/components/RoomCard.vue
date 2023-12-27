@@ -1,7 +1,13 @@
 <template>
 	<div class="card-wrap card-normal">
 		<div class="card-top">
-			<img class="card-avatar" src="~@/assets/images/elder.png" />
+			<img
+				class="card-avatar"
+				v-if="roomData.name === '男'"
+				src="~@/assets/images/man.png"
+				@click="handleOpenResumeDlg"
+			/>
+			<img class="card-avatar" v-else src="~@/assets/images/women.png" @click="handleOpenResumeDlg" />
 			<span class="card-name">{{ roomData.name }}</span>
 			<el-button class="card-num" type="danger" circle size="mini">30s</el-button>
 		</div>
@@ -32,15 +38,17 @@
 			ref="elderInfo"
 			:roomData="roomData"
 		></ElderInfoDlg>
+
+		<ResumeDlg :visible.sync="visibleResumeDlg" :roomData="roomData"></ResumeDlg>
 	</div>
 </template>
 
 <script>
-import { getHealthReportDataByElderId } from '@/api/security'
-
 import { mapActions } from 'vuex'
 
 import ElderInfoDlg from './ElderInfoDlg.vue'
+import ResumeDlg from './ResumeDlg.vue'
+
 export default {
 	name: 'SecurityCenterRoomCard',
 
@@ -55,12 +63,15 @@ export default {
 
 	components: {
 		ElderInfoDlg,
+		ResumeDlg,
 	},
 
 	data() {
 		return {
 			renderElderInfoDlg: false,
 			visibleElderInfoDlg: false,
+
+			visibleResumeDlg: false,
 
 			//数据获取中状态
 			loading: false,
@@ -72,6 +83,7 @@ export default {
 	methods: {
 		...mapActions('tempData', ['getReportData']),
 
+		//打开老人健康报告窗体
 		handleOpenElderDlg(elderId) {
 			const currentTime = new Date().Format('yyyy-MM-dd')
 			this.loading = true
@@ -89,10 +101,19 @@ export default {
 						})
 					})
 				})
-				.catch((err) => {})
+				.catch((err) => {
+					if (err) {
+						this.$message.warning(err)
+					}
+				})
 				.finally(() => {
 					this.loading = false
 				})
+		},
+
+		//打开老人信息窗体
+		handleOpenResumeDlg() {
+			this.visibleResumeDlg = true
 		},
 	},
 }
@@ -117,6 +138,7 @@ export default {
 			width: 40px;
 			height: 40px;
 			border-radius: 50%;
+			cursor: pointer;
 		}
 
 		.card-name {

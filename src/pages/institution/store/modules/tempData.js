@@ -37,9 +37,13 @@ const actions = {
 				resolve(reportData)
 			} else {
 				console.log(2)
-				dispatch('fetchReportData', payload).then((res) => {
-					resolve(res)
-				})
+				dispatch('fetchReportData', payload)
+					.then((res) => {
+						resolve(res)
+					})
+					.catch((err) => {
+						reject(err)
+					})
 			}
 		})
 	},
@@ -56,10 +60,10 @@ const actions = {
 				handelDayReport({
 					elderly_id: elderId,
 					search_date: reportDate,
-				}).then((response) => {
-					console.log('response', response)
-					const { result } = response.data
-					setTimeout(() => {
+				})
+					.then((response) => {
+						console.log('response', response)
+						const { result, message } = response.data
 						if (result === 'success') {
 							const { data } = response
 
@@ -70,9 +74,13 @@ const actions = {
 							})
 
 							resolve(data)
+						} else {
+							reject(message)
 						}
-					}, 400)
-				})
+					})
+					.catch((err) => {
+						reject()
+					})
 			}
 		})
 	},
