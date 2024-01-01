@@ -9,13 +9,13 @@ const getters = {
 	menuSelectedKey: (state) => state.data.menu.selectedKey,
 
 	/*---状态栏数据---*/
-	bedCount: (state, getters) => getters.originData.all_bed,
-	emptyBedCount: (state, getters) => getters.originData.empty_bed,
-	checkInCount: (state, getters) => getters.originData.check_in,
-	onBedCount: (state, getters) => getters.originData.on_bed,
-	offBedCount: (state, getters) => getters.checkInCount - getters.onBedCount,
-	offlineDeviceCount: (state, getters) => getters.originData.offline,
-	unHandleWarnCount: (state, getters) => getters.originData.un_warn,
+	// bedCount: (state, getters) => getters.originData.all_bed,
+	// emptyBedCount: (state, getters) => getters.originData.empty_bed,
+	// checkInCount: (state, getters) => getters.originData.check_in,
+	// onBedCount: (state, getters) => getters.originData.on_bed,
+	// offBedCount: (state, getters) => getters.checkInCount - getters.onBedCount,
+	// offlineDeviceCount: (state, getters) => getters.originData.offline,
+	// unHandleWarnCount: (state, getters) => getters.originData.un_warn,
 
 	/*---socket 数据 ---*/
 	vitalIotData: (state) => state.socketData.vitalIotDataCache,
@@ -105,6 +105,112 @@ const getters = {
 		console.log('result-->', result)
 
 		return result
+	},
+
+	/*---分类菜单过滤后的数据---*/
+	classifiedData: (state, getters) => {
+		let filteredBedData = getters.filteredBedData
+		let displayCategory = getters.displayCategory
+
+		let result = []
+		switch (displayCategory) {
+			//床铺
+			case '1':
+				result = filteredBedData
+				break
+			case '2':
+				result = filteredBedData.filter((item) => {
+					if (!item.elderly_id) {
+						return item
+					}
+				})
+				break
+			case '3':
+				result = filteredBedData.filter((item) => {
+					if (item.elderly_id) {
+						return item
+					}
+				})
+				break
+			case '4':
+				result = filteredBedData.filter((item) => {
+					if (item.status === '在床') {
+						return item
+					}
+				})
+				break
+			case '5':
+				result = filteredBedData.filter((item) => {
+					if (item.status === '离床') {
+						return item
+					}
+				})
+				break
+
+			case '6':
+				result = filteredBedData.filter((item) => {
+					if (item.status === '离线') {
+						return item
+					}
+				})
+				break
+			case '7':
+				result = filteredBedData.filter((item) => {
+					if (item.warn_count > 0) {
+						return item
+					}
+				})
+				break
+		}
+
+		return result
+	},
+
+	/*---分类数据---*/
+	allDataNum: (state, getters) => {
+		return getters.filteredBedData.length
+	},
+	emptyBedNum: (state, getters) => {
+		return getters.filteredBedData.filter((item) => {
+			if (!item?.elderly_id) {
+				return item
+			}
+		}).length
+	},
+	usedBedNum: (state, getters) => {
+		return getters.filteredBedData.filter((item) => {
+			if (item?.elderly_id) {
+				return item
+			}
+		}).length
+	},
+	inBedNum: (state, getters) => {
+		return getters.filteredBedData.filter((item) => {
+			if (item?.status === '在床') {
+				return item
+			}
+		}).length
+	},
+	offBedNum: (state, getters) => {
+		return getters.filteredBedData.filter((item) => {
+			if (item?.status === '离床') {
+				return item
+			}
+		}).length
+	},
+	offlineDeviceNum: (state, getters) => {
+		return getters.filteredBedData.filter((item) => {
+			if (item?.status === '离线') {
+				return item
+			}
+		}).length
+	},
+	alarmBedNum: (state, getters) => {
+		return getters.filteredBedData.filter((item) => {
+			if (item?.warn_count > 0) {
+				return item
+			}
+		}).length
 	},
 }
 export default getters

@@ -5,7 +5,7 @@
 
 			<el-scrollbar class="scroll-wrap" style="height: 100%">
 				<div class="panel-left-wrap">
-					<RoomCard v-for="(item, index) in filteredBedData" :roomData="item" :key="index"></RoomCard>
+					<RoomCard v-for="(item, index) in classifiedData" :roomData="item" :key="index"></RoomCard>
 				</div>
 			</el-scrollbar>
 		</section>
@@ -54,7 +54,7 @@ export default {
 	},
 
 	computed: {
-		...mapGetters(['roomData', 'filteredBedData']),
+		...mapGetters(['roomData', 'filteredBedData', 'classifiedData']),
 	},
 
 	mounted() {

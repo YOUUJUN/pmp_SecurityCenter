@@ -4,43 +4,43 @@
 			<el-radio class="radio-btn" label="1" border>
 				<div class="ctrl-label-wrap">
 					<span>全部床位</span>
-					<span>{{ bedCount }}</span>
+					<span>{{ allDataNum }}</span>
 				</div>
 			</el-radio>
 			<el-radio class="radio-btn" label="2" border>
 				<div class="ctrl-label-wrap">
 					<span>空闲床位</span>
-					<span>{{ emptyBedCount }}</span>
+					<span>{{ emptyBedNum }}</span>
 				</div>
 			</el-radio>
 			<el-radio class="radio-btn" label="3" border>
 				<div class="ctrl-label-wrap">
 					<span>入住床位</span>
-					<span>{{ checkInCount }}</span>
+					<span>{{ usedBedNum }}</span>
 				</div>
 			</el-radio>
 			<el-radio class="radio-btn" label="4" border>
 				<div class="ctrl-label-wrap">
 					<span>在床老人</span>
-					<span>{{ onBedCount }}</span>
+					<span>{{ inBedNum }}</span>
 				</div>
 			</el-radio>
 			<el-radio class="radio-btn" label="5" border>
 				<div class="ctrl-label-wrap">
 					<span>离床老人</span>
-					<span>{{ offBedCount }}</span>
+					<span>{{ offBedNum }}</span>
 				</div>
 			</el-radio>
 			<el-radio class="radio-btn" label="6" border>
 				<div class="ctrl-label-wrap">
 					<span>离线设备</span>
-					<span>{{ offlineDeviceCount }}</span>
+					<span>{{ offlineDeviceNum }}</span>
 				</div>
 			</el-radio>
 			<el-radio class="radio-btn" label="7" border>
 				<div class="ctrl-label-wrap">
 					<span>未处理告警</span>
-					<span>{{ unHandleWarnCount }}</span>
+					<span>{{ alarmBedNum }}</span>
 				</div>
 			</el-radio>
 		</el-radio-group>
@@ -59,13 +59,13 @@ export default {
 
 	computed: {
 		...mapGetters([
-			'bedCount',
-			'emptyBedCount',
-			'checkInCount',
-			'onBedCount',
-			'offBedCount',
-			'offlineDeviceCount',
-			'unHandleWarnCount',
+			'allDataNum',
+			'emptyBedNum',
+			'usedBedNum',
+			'inBedNum',
+			'offBedNum',
+			'offlineDeviceNum',
+			'alarmBedNum',
 		]),
 
 		categoryRadio: {
