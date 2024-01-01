@@ -3,23 +3,29 @@
 		class="menu-wrap"
 		:data="menuData"
 		default-expand-all
-		node-key="id"
+		node-key="only_id"
 		ref="tree"
 		highlight-current
 		:props="defaultProps"
 		:expand-on-click-node="false"
+		:check-on-click-node="true"
+		:show-checkbox="true"
+		:default-checked-keys="menuCheckedKeys"
+		:default-expanded-keys="menuExpandedKeys"
+		@node-click="handleNodeClick"
+		@check-change="handleCheckedChange"
 	>
 		<span class="custom-tree-node" slot-scope="{ node, data }">
 			<img v-if="node.level === 1" class="menu-icon" src="~@/assets/images/institution_menu.png" />
 			<img v-else-if="node.level === 2" class="menu-icon" src="~@/assets/images/building_menu.png" />
 			<img v-else-if="node.level === 3" class="menu-icon" src="~@/assets/images/room_menu.png" />
-			<span @click="test(node)">{{ node.label }}</span>
+			<span>{{ node.label }}</span>
 		</span>
 	</el-tree>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
 	data() {
@@ -32,12 +38,53 @@ export default {
 	},
 
 	computed: {
-		...mapGetters(['menuData']),
+		...mapGetters(['menuData', 'menuCheckedKeys', 'menuExpandedKeys', 'menuSelectedKey']),
+	},
+
+	watch: {
+		// setCheckedNodes
+		menuCheckedKeys: {
+			handler(newValue) {
+				this.setCheckedNodes(newValue)
+			},
+		},
 	},
 
 	methods: {
-		test(node) {
-			console.log('node', node)
+		...mapActions('data', ['changeMenuChecked', 'setMenuFilters']),
+
+		//处理菜单点击事件
+		handleNodeClick(data, node) {
+			// console.log('data', data);
+			let payload = [data.only_id]
+			//修改菜单选中项
+			this.changeMenuChecked(payload)
+		},
+
+		//设置菜单选择项
+		setCheckedNodes(nodes) {
+			this.$refs.tree.setCheckedNodes(nodes)
+		},
+
+		//处理菜单选中
+		handleCheckedChange(data, node) {
+			const treeMenu = this.$refs.tree
+			let checkedNodes = treeMenu.getCheckedNodes()
+
+			let menuFilterData = checkedNodes.map((item) => {
+				let id = item.only_id
+				let node = treeMenu.getNode(item)
+				return {
+					id,
+					parentId: node?.parent?.id,
+					level: node.level,
+				}
+			})
+
+			console.log('menuFilterData', menuFilterData)
+
+			//设置菜单过滤项
+			this.setMenuFilters(menuFilterData)
 		},
 	},
 }
@@ -70,6 +117,10 @@ export default {
 	line-height: 5.6rem;
 	font-size: 1.4rem;
 	color: #fff;
+}
+
+::v-deep .el-tree-node__content > label.el-checkbox {
+	margin: 0 8px 0 14px;
 }
 
 ::v-deep .el-tree-node__expand-icon {
