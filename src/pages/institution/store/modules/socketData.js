@@ -46,6 +46,9 @@ const actions = {
 				case 'bed_vital_iot':
 					dispatch('handleVitalIotData', jsonData)
 					break
+				case 'bed_alarm_iot':
+					dispatch('handleBedAlarmIot', jsonData)
+					break
 			}
 		})
 	},
@@ -55,6 +58,12 @@ const actions = {
 		const { date, data } = payload
 		const { elderly_id, elderly_name, breathing, heart } = data
 		commit('SET_VITAL_IOT_DATA', { elderly_id, elderly_name, breathing, heart, date })
+	},
+
+	//处理床位告警事件
+	handleBedAlarmIot({ state, commit, dispatch }, payload) {
+		const { date, data } = payload
+		dispatch('setBedAlarmData', { data }, { root: true })
 	},
 }
 

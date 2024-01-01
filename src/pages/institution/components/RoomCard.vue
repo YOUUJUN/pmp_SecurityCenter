@@ -1,13 +1,20 @@
 <template>
-	<div class="card-wrap card-normal">
+	<div class="card-wrap card-normal" :class="[alertClass, emptyClass, offlineClass]">
 		<div class="card-top">
 			<img
 				class="card-avatar"
-				v-if="roomData.name === '男'"
+				v-if="roomData.gender === '男'"
 				src="~@/assets/images/man.png"
 				@click="handleOpenResumeDlg"
 			/>
-			<img class="card-avatar" v-else src="~@/assets/images/women.png" @click="handleOpenResumeDlg" />
+			<img
+				class="card-avatar"
+				v-else-if="roomData.gender === '女'"
+				src="~@/assets/images/women.png"
+				@click="handleOpenResumeDlg"
+			/>
+
+			<img class="card-avatar" v-else src="~@/assets/images/empty_user.png" />
 			<span class="card-name">{{ roomData.name }}</span>
 			<el-button class="card-num" type="danger" circle size="mini">30s</el-button>
 		</div>
@@ -49,6 +56,8 @@ import { mapActions } from 'vuex'
 import ElderInfoDlg from './ElderInfoDlg.vue'
 import ResumeDlg from './ResumeDlg.vue'
 
+import { getAlertLevelClass } from '@/api/dict'
+
 export default {
 	name: 'SecurityCenterRoomCard',
 
@@ -75,10 +84,44 @@ export default {
 
 			//数据获取中状态
 			loading: false,
+
+			//报警卡片类
+			alertClass: '',
 		}
 	},
 
+	computed: {
+		emptyClass() {
+			const { elderly_id } = this.roomData
+			let className = ''
+			if (!elderly_id) {
+				className = 'card-blank'
+			}
+			return className
+		},
+
+		offlineClass() {
+			const { status } = this.roomData
+			let className = ''
+			if (status === '离线') {
+				className = 'card-off'
+			}
+			return className
+		},
+	},
+
 	mounted() {},
+
+	watch: {
+		roomData: {
+			deep: true,
+			handler(newValue) {
+				let { warn_text, alertFlag } = newValue
+				this.alertClass = getAlertLevelClass(warn_text, alertFlag)
+				console.log('alertClass', this.alertClass)
+			},
+		},
+	},
 
 	methods: {
 		...mapActions('tempData', ['getReportData']),
@@ -125,6 +168,7 @@ export default {
 	flex-direction: column;
 	justify-content: space-between;
 	align-items: center;
+	border: 2px solid transparent;
 	border-radius: 10px;
 	height: 240px;
 	padding: 16px 0;
@@ -229,5 +273,6 @@ export default {
 
 .card-blank {
 	background-color: #fff;
+	border-color: #ecedef;
 }
 </style>

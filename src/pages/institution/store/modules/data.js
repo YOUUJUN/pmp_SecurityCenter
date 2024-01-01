@@ -45,7 +45,17 @@ const mutations = {
 
 	// 设置所有房间数据
 	SET_ALL_ROOM_DIC(state, payload) {
-		state.allRoomDic = payload
+		state.allRoomDic = payload.map((item) => {
+			let obj = {}
+
+			//添加初始告警信息
+			Object.assign(obj, item, {
+				alarmList: [],
+				alertFlag: false,
+			})
+
+			return obj
+		})
 	},
 
 	// 设置所有卫生间区域报警数据
@@ -61,8 +71,33 @@ const mutations = {
 		}
 	},
 
+	//设置菜单过滤条件
 	SET_MENU_FILTERS(state, payload) {
 		state.menu.filters = payload
+	},
+
+	// 设置告警床位告警数据
+	SET_ALARM_BED_DATA(state, payload) {
+		console.log('seting bed alarm data....', payload)
+		const { alarming, bed_id, alarming_date } = payload
+		let alarmBed = state.allRoomDic.find((item) => {
+			if (bed_id === item.bed_id) {
+				return item
+			}
+		})
+
+		let alarmList = alarmBed.alarmList.concat({
+			alarming,
+			alarming_date,
+		})
+
+		Object.assign(alarmBed, {
+			status: alarming,
+			warn_text: alarming,
+			alarmList,
+			alertFlag: true,
+		})
+		console.log('seting finished....', alarmBed)
 	},
 }
 
@@ -105,6 +140,15 @@ const actions = {
 	//设置菜单过滤条件
 	setMenuFilters({ state, commit }, payload) {
 		commit('SET_MENU_FILTERS', payload)
+	},
+
+	//设置床位告警数据
+	setBedAlarmData: {
+		root: true,
+		handler({ state, commit }, payload) {
+			const { data } = payload
+			commit('SET_ALARM_BED_DATA', data)
+		},
 	},
 }
 

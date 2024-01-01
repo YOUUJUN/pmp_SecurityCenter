@@ -54,7 +54,7 @@ export default {
 	},
 
 	computed: {
-		...mapGetters(['roomData', 'filteredBedData', 'classifiedData']),
+		...mapGetters(['classifiedData']),
 	},
 
 	mounted() {
