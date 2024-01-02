@@ -314,6 +314,7 @@ export default {
 			this.mode = mode
 			if (mode === 1) {
 				this.handelDayReport(this.partnerId, date)
+				this.monthChange(moment(date).format('YYYY-MM'))
 			}
 		},
 		entry(index) {
