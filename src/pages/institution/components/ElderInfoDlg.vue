@@ -27,38 +27,7 @@
 					<div class="bar-chart" ref="bar"></div>
 				</div>
 				<div class="dlg-body-right">
-					<div class="dlg-body-right-top">
-						<span class="dlg-body-title">告警记录</span>
-						<el-date-picker
-							class="dlg-body-right-date"
-							v-model="choicedDate"
-							type="date"
-							placeholder="选择日期"
-						></el-date-picker>
-					</div>
-
-					<div class="dlg-body-right-bottom">
-						<el-table class="dlg-table" :data="tableData" style="width: 100%">
-							<el-table-column
-								prop="alarm_time"
-								label="时间"
-								width="165px"
-								align="center"
-							></el-table-column>
-							<el-table-column prop="alarm_type" label="事件" align="center"></el-table-column>
-							<el-table-column prop="address" label="操作" align="center"></el-table-column>
-						</el-table>
-					</div>
-
-					<div class="dlg-body-right-footer">
-						<el-pagination
-							class="table-pagging"
-							background
-							layout="prev, pager, next"
-							:total="tableData.length"
-							small
-						></el-pagination>
-					</div>
+					<AlarmTable :bedId="roomData.bed_id"></AlarmTable>
 				</div>
 			</section>
 
@@ -154,6 +123,7 @@ import { Chart } from '@antv/g2'
 
 import CursorBar from '@/components/CursorBar/CursorBar.vue'
 import HealthReport from './ElderInfoParts/HealthReport.vue'
+import AlarmTable from './AlarmTable.vue'
 
 import { mapActions, mapGetters } from 'vuex'
 
@@ -163,6 +133,7 @@ export default {
 	components: {
 		CursorBar,
 		HealthReport,
+		AlarmTable,
 	},
 
 	props: {
@@ -199,37 +170,11 @@ export default {
 			//呼吸心跳图表
 			heartBreathChart: null,
 
-			tableData: [
-				{
-					date: '2016-05-02',
-					name: '王小虎',
-					address: ' 1518 弄',
-				},
-				{
-					date: '2016-05-04',
-					name: '王小虎',
-					address: '上海市',
-				},
-				{
-					date: '2016-05-01',
-					name: '王小虎',
-					address: ' 1519 弄',
-				},
-				{
-					date: '2016-05-03',
-					name: '王小虎',
-					address: ' 1516 弄',
-				},
-			],
-
 			//监测时段数据
 			MonitorData: {},
 
 			//监测时段总睡眠时长
 			totalSleepTime: '',
-
-			//选择的日期
-			choicedDate: '',
 
 			partner_id: this.roomData.elderly_id,
 
@@ -266,8 +211,6 @@ export default {
 			},
 		},
 	},
-
-	mounted() {},
 
 	methods: {
 		...mapActions('tempData', ['getReportData']),
@@ -793,7 +736,7 @@ export default {
 			display: flex;
 			flex-direction: row;
 			align-items: center;
-			height: 400px;
+			height: 100%;
 			margin-bottom: 16px;
 
 			.dlg-body-title {
@@ -810,6 +753,7 @@ export default {
 				flex-direction: column;
 				flex: auto;
 				height: 100%;
+				align-self: flex-start;
 				.bar-chart {
 					flex: auto;
 					width: 100%;
@@ -832,65 +776,6 @@ export default {
 				flex: none;
 				width: 400px;
 				height: 100%;
-				display: flex;
-				flex-direction: column;
-				align-items: center;
-
-				.dlg-body-right-top {
-					flex: none;
-					width: 100%;
-					display: flex;
-					align-items: center;
-					justify-content: space-between;
-
-					.dlg-body-right-date {
-						::v-deep .el-input__inner {
-							font-size: 14px;
-							font-family: PingFang SC;
-							padding: 0 0 0 33px;
-							height: 28px;
-						}
-
-						::v-deep .el-input__prefix {
-							top: -7px;
-						}
-
-						font-weight: 500;
-						color: #666666;
-						width: 106px;
-					}
-				}
-
-				.dlg-body-right-bottom {
-					flex: auto;
-					height: 100%;
-					width: 100%;
-					margin-top: 14px;
-					.dlg-table {
-						height: 100%;
-						border: 1px solid #d9d9d9;
-						border-radius: 10px;
-						overflow: hidden;
-					}
-					::v-deep .el-table__header {
-						height: 40px;
-					}
-
-					::v-deep .el-table th {
-						background: #f1f2f6;
-					}
-				}
-
-				.dlg-body-right-footer {
-					flex: none;
-					margin-top: 8px;
-					width: 100%;
-					display: flex;
-					justify-content: flex-end;
-
-					.table-pagging {
-					}
-				}
 			}
 		}
 
