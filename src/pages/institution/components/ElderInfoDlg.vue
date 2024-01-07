@@ -3,14 +3,16 @@
 		<template slot="title">
 			<div class="dlg-title-wrap">
 				<div class="dlg-title-left">
-					<img class="dlg-logo" src="~@/assets/images/toilet.png" />
-					<span class="dlg-title">{{ areaName }}</span>
-					<span class="dlg-status">{{ statusText }}</span>
+					<!-- <img class="dlg-logo" src="~@/assets/images/toilet.png" /> -->
+					<img class="dlg-logo" v-if="roomData.gender === '男'" src="~@/assets/images/man.png" />
+					<img class="dlg-logo" v-else-if="roomData.gender === '女'" src="~@/assets/images/women.png" />
+					<span class="dlg-title">{{ roomData.name }}</span>
+					<span class="dlg-status">{{ roomData.elderly_name }}</span>
 				</div>
 
 				<div class="dlg-title-right">
-					<img class="dlg-logo" src="~@/assets/images/toilet.png" />
-					<span class="dlg-title">在床</span>
+					<img class="dlg-logo" src="~@/assets/images/alert/bedroom.png" />
+					<span class="dlg-title">{{ roomData.status }}</span>
 					<span class="dlg-desc">实时监控中</span>
 				</div>
 			</div>
@@ -24,7 +26,8 @@
 						<CursorBar :value="breathValue" type="breath"></CursorBar>
 						<CursorBar :value="heartValue" type="heart"></CursorBar>
 					</div>
-					<div class="bar-chart" ref="bar"></div>
+					<div class="bar-chart" ref="heartBar"></div>
+					<div class="bar-chart" ref="breathBar"></div>
 				</div>
 				<div class="dlg-body-right">
 					<AlarmTable type="bed" :bedId="roomData.bed_id"></AlarmTable>
@@ -60,12 +63,6 @@ export default {
 			default: false,
 		},
 
-		//区域名
-		areaName: {
-			type: String,
-			default: '101卫生间',
-		},
-
 		//区域状态
 		statusText: {
 			type: String,
@@ -85,8 +82,11 @@ export default {
 			breathValue: 0,
 			heartValue: 0,
 
-			//呼吸心跳图表
-			heartBreathChart: null,
+			//心跳图表
+			heartChart: null,
+
+			//呼吸图表
+			breathChart: null,
 
 			//监测时段数据
 			MonitorData: {},
@@ -124,7 +124,8 @@ export default {
 					this.breathValue = breathing
 					this.heartValue = heart
 
-					this.heartBreathChart && this.updateHeartChart()
+					this.heartChart && this.updateHeartChart()
+					this.breathChart && this.updateBreathChart()
 				}
 			},
 		},
@@ -143,9 +144,10 @@ export default {
 					const { alarm_datas, monitor_period } = reportData
 					// this.tableData = alarm_datas
 					this.MonitorData = monitor_period
-
-					this.drawHeartChart()
 				}
+
+				this.drawHeartChart()
+				this.drawBreathChart()
 
 				this.$refs.healthReport.handelDayReport(elderId, reportDate)
 			})
@@ -159,8 +161,9 @@ export default {
 		//处理窗体打开
 		handleDlgOpen() {},
 
-		//绘制呼吸心跳图
+		//绘制心跳图
 		drawHeartChart() {
+			console.log('draw...')
 			const { elderly_id } = this.roomData
 			const originData = this.vitalIotData[elderly_id] || []
 			const xData = originData.map((value, index) => {
@@ -173,13 +176,68 @@ export default {
 				return heart
 			})
 
+			var chartDom = this.$refs.heartBar
+			this.heartChart = echarts.init(chartDom)
+			var option
+
+			option = {
+				tooltip: {
+					trigger: 'axis',
+				},
+				legend: {
+					show: false,
+				},
+				grid: {
+					top: 0,
+					bottom: 0,
+					left: '5%',
+					right: '10%',
+				},
+				xAxis: {
+					type: 'category',
+					show: false,
+					boundaryGap: false,
+					// data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+					data: xData,
+				},
+				yAxis: {
+					type: 'value',
+					show: false,
+				},
+				series: [
+					{
+						name: '心率',
+						type: 'line',
+						showSymbol: false,
+						// data: [1, -2, 2, 5, 3, 2, 0],
+						data: heartData,
+						markLine: {
+							data: [{ type: 'average', name: 'Avg' }],
+						},
+					},
+				],
+			}
+
+			option && this.heartChart.setOption(option)
+		},
+
+		//绘制呼吸图
+		drawBreathChart() {
+			console.log('draw...')
+			const { elderly_id } = this.roomData
+			const originData = this.vitalIotData[elderly_id] || []
+			const xData = originData.map((value, index) => {
+				let { date } = value
+				return date
+			})
+
 			const breathData = originData.map((value, index) => {
 				let { breathing } = value
 				return breathing
 			})
 
-			var chartDom = this.$refs.bar
-			this.heartBreathChart = echarts.init(chartDom)
+			var chartDom = this.$refs.breathBar
+			this.breathChart = echarts.init(chartDom)
 			var option
 
 			option = {
@@ -218,20 +276,10 @@ export default {
 							data: [{ type: 'average', name: 'Avg' }],
 						},
 					},
-					{
-						name: '心率',
-						type: 'line',
-						showSymbol: false,
-						// data: [1, -2, 2, 5, 3, 2, 0],
-						data: heartData,
-						markLine: {
-							data: [{ type: 'average', name: 'Avg' }],
-						},
-					},
 				],
 			}
 
-			option && this.heartBreathChart.setOption(option)
+			option && this.breathChart.setOption(option)
 		},
 
 		//更新呼吸心跳图数据
@@ -248,12 +296,35 @@ export default {
 				return heart
 			})
 
+			this.heartChart.setOption({
+				xAxis: {
+					data: xData,
+				},
+
+				series: [
+					{
+						name: '心率',
+						data: heartData,
+					},
+				],
+			})
+		},
+
+		//更新呼吸心跳图数据
+		updateBreathChart() {
+			const { elderly_id } = this.roomData
+			const originData = this.vitalIotData[elderly_id] || []
+			const xData = originData.map((value, index) => {
+				let { date } = value
+				return date
+			})
+
 			const breathData = originData.map((value, index) => {
 				let { breathing } = value
 				return breathing
 			})
 
-			this.heartBreathChart.setOption({
+			this.breathChart.setOption({
 				xAxis: {
 					data: xData,
 				},
@@ -262,10 +333,6 @@ export default {
 					{
 						name: '呼吸',
 						data: breathData,
-					},
-					{
-						name: '心率',
-						data: heartData,
 					},
 				],
 			})
@@ -351,7 +418,7 @@ export default {
 		.dlg-body {
 			display: flex;
 			flex-direction: row;
-			align-items: center;
+			align-items: flex-start;
 			height: 100%;
 			margin-bottom: 16px;
 
@@ -373,7 +440,7 @@ export default {
 				.bar-chart {
 					flex: auto;
 					width: 100%;
-					height: 100%;
+					height: 100px;
 				}
 
 				.cursor-bar-wrap {

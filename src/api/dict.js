@@ -30,6 +30,10 @@ export function getAlertLevelImg(msg_text) {
 	let imgPath = ''
 	let alertClass = ''
 	switch (msg_text) {
+		case '在线':
+			alertClass = 'level_1_warning'
+			imgPath = require('@/assets/images/alert/bedroom.png')
+			break
 		case '跌倒告警':
 			alertClass = 'level_1_warning'
 			imgPath = require('@/assets/images/alert/fall.png')

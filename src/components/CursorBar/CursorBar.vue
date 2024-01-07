@@ -4,11 +4,16 @@
 			<div class="line-left"></div>
 			<div class="line-center"></div>
 			<div class="line-right"></div>
-			<div class="cursor-box">
+			<div
+				class="cursor-box"
+				:style="{
+					left: leftValue,
+				}"
+			>
 				<div class="cursor-box-top">
 					<img v-if="type === 'heart'" class="cursor-icon" src="~@/assets/images/heart.png" />
 					<img v-if="type === 'breath'" class="cursor-icon" src="~@/assets/images/breath.png" />
-					<span>呼吸：</span>
+					<span>{{ label }}</span>
 					<span>{{ value }}</span>
 				</div>
 				<div class="cursor-box-bottom">
@@ -34,6 +39,43 @@ export default {
 		type: {
 			type: String,
 			default: 'heart',
+		},
+	},
+
+	computed: {
+		leftValue() {
+			let value = this.value
+			if (this.type === 'heart') {
+				if (value <= 40) {
+					console.log(1)
+					return '0'
+				} else if (40 < value > 90) {
+					console.log(2)
+					return '33%'
+				} else {
+					console.log(3)
+					return '66%'
+				}
+			} else {
+				if (value <= 12) {
+					console.log(1)
+					return '0'
+				} else if (12 < value > 20) {
+					console.log(2)
+					return '33%'
+				} else {
+					console.log(3)
+					return '66%'
+				}
+			}
+		},
+
+		label() {
+			if (this.type === 'heart') {
+				return '心率'
+			} else {
+				return '呼吸'
+			}
 		},
 	},
 	data() {
