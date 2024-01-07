@@ -1,5 +1,6 @@
 <template>
 	<div class="card-wrap card-normal" :class="[alertClass, emptyClass, offlineClass]">
+		<div class="card-badge" v-show="roomData.warn_count > 0">{{ roomData.warn_count }}</div>
 		<div class="card-top">
 			<img
 				class="card-avatar"
@@ -16,7 +17,10 @@
 
 			<img class="card-avatar" v-else src="~@/assets/images/empty_user.png" />
 			<span class="card-name">{{ roomData.name }}</span>
-			<el-button class="card-num" type="danger" circle size="mini">30s</el-button>
+			<el-button v-if="alertCount !== 0" class="card-num" type="danger" circle size="mini">
+				{{ alertCount }}s
+			</el-button>
+			<span v-else></span>
 		</div>
 		<ul class="card-middle" v-if="roomData.elderly_id">
 			<li class="card-item">
@@ -87,6 +91,9 @@ export default {
 
 			//报警卡片类
 			alertClass: '',
+
+			//告警计时
+			alertCount: 30,
 		}
 	},
 
@@ -110,21 +117,25 @@ export default {
 		},
 	},
 
-	mounted() {},
-
 	watch: {
 		roomData: {
 			deep: true,
 			handler(newValue) {
-				let { warn_text, alertFlag } = newValue
-				this.alertClass = getAlertLevelClass(warn_text, alertFlag)
+				let { warn_text, warn_count, alertFlag } = newValue
+				this.alertClass = getAlertLevelClass(warn_text, alertFlag, warn_count)
 				console.log('alertClass', this.alertClass)
+				if (alertFlag) {
+					this.setCardAlarm()
+				}
 			},
 		},
 	},
 
+	mounted() {},
+
 	methods: {
 		...mapActions('tempData', ['getReportData']),
+		...mapActions('data', ['resetBedAlarm']),
 
 		//打开老人健康报告窗体
 		handleOpenElderDlg(elderId) {
@@ -158,12 +169,37 @@ export default {
 		handleOpenResumeDlg() {
 			this.visibleResumeDlg = true
 		},
+
+		//启动卡片告警
+		setCardAlarm() {
+			const { bed_id } = this.roomData
+			this.startCountdown(3, () => {
+				this.resetBedAlarm({
+					bed_id,
+				})
+			})
+		},
+
+		//开始告警计时
+		startCountdown(duration, callback) {
+			this.alertCount = duration
+			let timer = setInterval(() => {
+				this.alertCount--
+				if (this.alertCount <= 0) {
+					clearInterval(timer)
+					if (typeof callback === 'function') {
+						callback()
+					}
+				}
+			}, 1000)
+		},
 	},
 }
 </script>
 
 <style lang="less" scoped>
 .card-wrap {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	justify-content: space-between;
@@ -172,6 +208,26 @@ export default {
 	border-radius: 10px;
 	height: 240px;
 	padding: 16px 0;
+	margin-top: 9px;
+
+	.card-badge {
+		position: absolute;
+		top: 0;
+		right: 10px;
+		transform: translateY(-50%) translateX(100%);
+		font-size: 10px;
+		color: #fff;
+		background-color: #f56c6c;
+		display: flex;
+		width: 2rem;
+		height: 2rem;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		cursor: pointer;
+		user-select: none;
+	}
+
 	.card-top {
 		flex: none;
 		display: flex;

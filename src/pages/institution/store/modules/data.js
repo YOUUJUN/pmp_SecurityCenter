@@ -95,9 +95,25 @@ const mutations = {
 			status: alarming,
 			warn_text: alarming,
 			alarmList,
+			warn_count: alarmBed.warn_count + 1,
 			alertFlag: true,
 		})
 		console.log('seting finished....', alarmBed)
+	},
+
+	//设置床位告警状态
+	CHANGE_BED_ALERT_STATUS(state, payload) {
+		console.log('setting status...')
+		let { bed_id, alertFlag } = payload
+		let alarmBed = state.allRoomDic.find((data) => data.bed_id === bed_id)
+		if (alertFlag === true) {
+			// alarmBed.alertFlag = false
+			setTimeout(() => {
+				alarmBed.alertFlag = alertFlag
+			}, 500)
+		} else {
+			alarmBed.alertFlag = alertFlag
+		}
 	},
 }
 
@@ -149,6 +165,12 @@ const actions = {
 			const { data } = payload
 			commit('SET_ALARM_BED_DATA', data)
 		},
+	},
+
+	//重置床位告警状态
+	resetBedAlarm({ state, commit }, payload) {
+		const { bed_id } = payload
+		commit('CHANGE_BED_ALERT_STATUS', { bed_id, alertFlag: false })
 	},
 }
 
