@@ -93,7 +93,10 @@ export default {
 			alertClass: '',
 
 			//告警计时
-			alertCount: 30,
+			alertCount: 0,
+
+			//告警计时器
+			alertTimer: null,
 		}
 	},
 
@@ -155,11 +158,6 @@ export default {
 						})
 					})
 				})
-				.catch((err) => {
-					if (err) {
-						this.$message.warning(err)
-					}
-				})
 				.finally(() => {
 					this.loading = false
 				})
@@ -173,7 +171,10 @@ export default {
 		//启动卡片告警
 		setCardAlarm() {
 			const { bed_id } = this.roomData
-			this.startCountdown(3, () => {
+			if (this.alertTimer) {
+				clearInterval(this.alertTimer)
+			}
+			this.startCountdown(30, () => {
 				this.resetBedAlarm({
 					bed_id,
 				})
@@ -183,10 +184,10 @@ export default {
 		//开始告警计时
 		startCountdown(duration, callback) {
 			this.alertCount = duration
-			let timer = setInterval(() => {
+			this.alertTimer = setInterval(() => {
 				this.alertCount--
 				if (this.alertCount <= 0) {
-					clearInterval(timer)
+					clearInterval(this.alertTimer)
 					if (typeof callback === 'function') {
 						callback()
 					}

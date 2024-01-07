@@ -199,11 +199,16 @@ const getters = {
 		}).length
 	},
 	alarmBedNum: (state, getters) => {
-		return getters.filteredBedData.filter((item) => {
+		const alarmBeds = getters.filteredBedData.filter((item) => {
 			if (item?.warn_count > 0) {
 				return item
 			}
-		}).length
+		})
+
+		return alarmBeds.reduce((total, item) => {
+			total += item.warn_count
+			return total
+		}, 0)
 	},
 }
 export default getters

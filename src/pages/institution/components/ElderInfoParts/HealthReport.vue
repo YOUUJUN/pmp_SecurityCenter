@@ -1,6 +1,6 @@
 <template>
 	<article>
-		<DialogHead :title="title" @modeChage="modeChage" :badgeDate="badgeDate"></DialogHead>
+		<DialogHead ref="dlgHead" :title="title" @modeChage="modeChage" :badgeDate="badgeDate"></DialogHead>
 		<div class="report-header">
 			<div v-if="mode === 1 && showReport" class="report-content" style="width: 100%" id="mode1">
 				<DialogTittle title="睡眠指标" src="~@/assets/images/sleepReport/sleepIndex.png"></DialogTittle>
@@ -213,7 +213,7 @@ export default {
 	},
 	created() {},
 	mounted() {
-		this.handelDayReport(this.partnerId, this.sleepReportData)
+		// this.handelDayReport(this.partnerId, this.sleepReportData)
 		const yearMonth = moment(this.sleepReportData).format('YYYY-MM')
 		this.monthChange(yearMonth)
 	},
@@ -252,8 +252,8 @@ export default {
 	},
 	methods: {
 		...mapActions('tempData', ['getReportData']),
-
 		async handelDayReport(id, data) {
+			console.log('day report')
 			this.partnerIdSeven = this.partnerId
 			this.sleepReportDataSeven = this.sleepReportData
 			await this.getReportData({
@@ -262,7 +262,7 @@ export default {
 			}).then(
 				(res) => {
 					console.log('res12', res)
-					if (res.result === 'success') {
+					if (res && res.result === 'success') {
 						this.showReport = true
 						let {
 							title,

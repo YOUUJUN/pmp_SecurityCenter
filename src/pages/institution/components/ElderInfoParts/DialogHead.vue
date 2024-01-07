@@ -84,6 +84,11 @@ export default {
 		},
 	},
 	methods: {
+		//设置日期
+		setDate(date) {
+			this.dateCalendar = moment(date)
+		},
+
 		setMode(mode) {
 			this.mode = mode
 			console.log(mode)
