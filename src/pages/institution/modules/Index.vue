@@ -16,17 +16,18 @@
 				<!-- <div class="panel-right-wrap"> -->
 				<transition-group class="panel-right-wrap" name="list-complete" tag="div">
 					<AreaCard
-						v-for="(item, index) in dataList"
+						v-for="(item, index) in roomAlertData"
 						class="list-complete-item"
-						:key="item"
-						@click.native="openAreaDlg()"
+						:cardInfo="item"
+						:key="index"
+						@click.native="openAreaDlg(item)"
 					></AreaCard>
 				</transition-group>
 				<!-- </div> -->
 			</el-scrollbar>
 		</section>
 
-		<AreaDetailDlg :visible.sync="visible"></AreaDetailDlg>
+		<AreaDetailDlg ref="areaDlg" :visible.sync="visible"></AreaDetailDlg>
 	</article>
 </template>
 
@@ -54,7 +55,7 @@ export default {
 	},
 
 	computed: {
-		...mapGetters(['classifiedData']),
+		...mapGetters(['classifiedData', 'roomAlertData']),
 	},
 
 	mounted() {
@@ -64,8 +65,10 @@ export default {
 	},
 
 	methods: {
-		openAreaDlg() {
+		openAreaDlg(item) {
+			console.log('item', item)
 			this.visible = true
+			this.$refs.areaDlg.setData(item)
 		},
 
 		add() {

@@ -27,7 +27,7 @@
 					<div class="bar-chart" ref="bar"></div>
 				</div>
 				<div class="dlg-body-right">
-					<AlarmTable :bedId="roomData.bed_id"></AlarmTable>
+					<AlarmTable type="bed" :bedId="roomData.bed_id"></AlarmTable>
 				</div>
 			</section>
 

@@ -7,6 +7,7 @@
 				v-model="choicedDate"
 				type="date"
 				placeholder="选择日期"
+				@change="handleDateChange"
 			></el-date-picker>
 		</div>
 
@@ -36,12 +37,18 @@
 	</section>
 </template>
 <script>
-import { fetchAlarmList, handleAlarmSolved } from '@/api/security'
+import { fetchAlarmList, handleAlarmSolved, fetchRoomAlarmList } from '@/api/security'
+import moment from 'moment'
 export default {
 	props: {
 		bedId: {
 			type: Number,
 			default: 0,
+		},
+
+		tableType: {
+			type: String,
+			default: 'bed',
 		},
 	},
 	data() {
@@ -51,7 +58,7 @@ export default {
 			//告警列表数据
 			tableData: [],
 			//选择的日期
-			choicedDate: '',
+			choicedDate: new Date(),
 		}
 	},
 
@@ -60,13 +67,25 @@ export default {
 	},
 
 	methods: {
+		handleDateChange() {
+			this.page = 1
+			this.total = 0
+			this.getAlarmListData()
+		},
+
 		//获取告警列表数据
 		getAlarmListData() {
+			console.log('choicedDate', this.choicedDate)
+			let date = moment(this.choicedDate).format('YYYY-MM-DD')
 			let page = this.page
-			fetchAlarmList({
+
+			const fetchAction = this.tableType === 'bed' ? fetchAlarmList : fetchRoomAlarmList
+
+			fetchAction({
 				type: 'inst',
 				id: this.bedId,
 				limit: 5,
+				date,
 				page,
 			})
 				.then((res) => {

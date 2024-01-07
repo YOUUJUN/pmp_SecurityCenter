@@ -10,6 +10,7 @@ const getters = {
 
 	/*---socket 数据 ---*/
 	vitalIotData: (state) => state.socketData.vitalIotDataCache,
+	roomAlertData: (state) => state.socketData.roomAlertCache,
 
 	/*---渲染条件控制---*/
 	displayCategory: (state) => state.display.displayCategory,

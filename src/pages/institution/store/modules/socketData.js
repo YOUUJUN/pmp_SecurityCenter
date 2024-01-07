@@ -4,6 +4,9 @@ import SocketService from '@/api/socketService'
 const state = {
 	// 实时数据缓存
 	vitalIotDataCache: {},
+
+	//区域告警缓存
+	roomAlertCache: [],
 }
 
 const mutations = {
@@ -20,6 +23,11 @@ const mutations = {
 		state.vitalIotDataCache = Object.assign({}, state.vitalIotDataCache, {
 			[elderly_id]: dataCache,
 		})
+	},
+
+	//添加区域告警缓存
+	SET_ROOM_ALERT_DATA(state, payload) {
+		state.roomAlertCache.push(payload)
 	},
 }
 
@@ -49,6 +57,9 @@ const actions = {
 				case 'bed_alarm_iot':
 					dispatch('handleBedAlarmIot', jsonData)
 					break
+				case 'room_alarm_iot':
+					dispatch('handleRoomAlarmIot', jsonData)
+					break
 			}
 		})
 	},
@@ -64,6 +75,12 @@ const actions = {
 	handleBedAlarmIot({ state, commit, dispatch }, payload) {
 		const { date, data } = payload
 		dispatch('setBedAlarmData', { data }, { root: true })
+	},
+
+	//处理区域告警事件
+	handleRoomAlarmIot({ state, commit, dispatch }, payload) {
+		console.log('payload', payload)
+		commit('SET_ROOM_ALERT_DATA', payload)
 	},
 }
 

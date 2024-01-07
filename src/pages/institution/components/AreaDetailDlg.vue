@@ -15,33 +15,7 @@
 				<div class="bar-chart" ref="bar"></div>
 			</div>
 			<div class="dlg-body-right">
-				<div class="dlg-body-right-top">
-					<span class="dlg-body-right-title">告警记录</span>
-					<el-date-picker
-						class="dlg-body-right-date"
-						v-model="choicedDate"
-						type="date"
-						placeholder="选择日期"
-					></el-date-picker>
-				</div>
-
-				<div class="dlg-body-right-bottom">
-					<el-table class="dlg-table" :data="tableData" style="width: 100%">
-						<el-table-column prop="date" label="时间" align="center"></el-table-column>
-						<el-table-column prop="name" label="事件" align="center"></el-table-column>
-						<el-table-column prop="address" label="操作" align="center"></el-table-column>
-					</el-table>
-				</div>
-
-				<div class="dlg-body-right-footer">
-					<el-pagination
-						class="table-pagging"
-						background
-						layout="prev, pager, next"
-						:total="1000"
-						small
-					></el-pagination>
-				</div>
+				<AlarmTable type="room" :bedId="device_id"></AlarmTable>
 			</div>
 		</section>
 	</el-dialog>
@@ -49,24 +23,19 @@
 <script>
 import * as echarts from 'echarts'
 import { Chart } from '@antv/g2'
+
+import AlarmTable from './AlarmTable.vue'
+
 export default {
 	props: {
 		visible: {
 			type: Boolean,
 			default: false,
 		},
+	},
 
-		//区域名
-		areaName: {
-			type: String,
-			default: '101卫生间',
-		},
-
-		//区域状态
-		statusText: {
-			type: String,
-			default: '有人',
-		},
+	components: {
+		AlarmTable,
 	},
 
 	data() {
@@ -96,6 +65,10 @@ export default {
 
 			//选择的日期
 			choicedDate: '',
+
+			areaName: '101卫生间',
+			statusText: '有人',
+			device_id: 0,
 		}
 	},
 
@@ -112,6 +85,15 @@ export default {
 	mounted() {},
 
 	methods: {
+		//初始化数据
+		setData(payload) {
+			const { data } = payload
+			const { device_id, alarm_msg, name } = data
+			this.areaName = `${name} - 卫生间`
+			this.statusText = alarm_msg
+			this.device_id = device_id
+		},
+
 		handleClose() {
 			this.$emit('update:visible', false)
 		},

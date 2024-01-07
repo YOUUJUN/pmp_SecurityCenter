@@ -1,23 +1,70 @@
 <template>
-	<div class="card-wrap">
-		<img class="card-logo" src="~@/assets/images/toilet.png" />
-		<span>101</span>
-		<span>卫生间有人</span>
-		<div class="card-num">18s</div>
+	<div class="card-wrap" :class="alertLevelClass">
+		<img class="card-logo" :src="alertImgPath" />
+		<span>{{ cardInfo.data.room_name }}</span>
+		<span>{{ cardInfo.data.alarm_msg }}</span>
+		<div class="card-num" v-if="alertCount !== 0">{{ alertCount }}s</div>
 	</div>
 </template>
 
 <script>
+import { getAlertLevelImg } from '@/api/dict'
+
 export default {
 	name: 'SecurityCenterAreaCard',
 
-	data() {
-		return {}
+	props: {
+		cardInfo: {
+			type: Object,
+			default() {
+				return {}
+			},
+		},
 	},
 
-	mounted() {},
+	data() {
+		return {
+			alertImgPath: '',
+			alertLevelClass: '',
 
-	methods: {},
+			//告警计时
+			alertCount: 0,
+		}
+	},
+
+	watch: {
+		cardInfo: {
+			deep: true,
+			immediate: true,
+			handler(newValue) {
+				let { alarm_msg } = newValue.data
+				const { imgPath, alertClass } = getAlertLevelImg(alarm_msg)
+
+				this.alertLevelClass = alertClass
+				this.alertImgPath = imgPath
+			},
+		},
+	},
+
+	mounted() {
+		this.startCountdown(18)
+	},
+
+	methods: {
+		//开始告警计时
+		startCountdown(duration, callback) {
+			this.alertCount = duration
+			this.alertTimer = setInterval(() => {
+				this.alertCount--
+				if (this.alertCount <= 0) {
+					clearInterval(this.alertTimer)
+					if (typeof callback === 'function') {
+						callback()
+					}
+				}
+			}, 1000)
+		},
+	},
 }
 </script>
 
@@ -50,5 +97,19 @@ export default {
 		height: 38px;
 		border-radius: 50%;
 	}
+}
+</style>
+
+<style scoped>
+.level_1_warning {
+	background: #fbe5e6;
+}
+
+.level_2_warning {
+	background: #fbe5e6;
+}
+
+.level_3_warning {
+	background: #d7d7d7;
 }
 </style>

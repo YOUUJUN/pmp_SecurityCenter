@@ -64,54 +64,54 @@ export function handelSevenDayReport(params) {
 
 // 获取告警列表数据
 export function fetchAlarmList(params) {
-	// return request({
-	// 	url: `/public/alarm/list/data/api`,
-	// 	method: 'post',
-	// 	data: qs.stringify(params),
-	// 	headers: {
-	// 		'content-type': 'application/x-www-form-urlencoded',
-	// 	},
-	// })
-
-	return new Promise((resolve) => {
-		resolve({
-			result: 'success',
-			message: 'success',
-			alarm_datas: [
-				{
-					id: 22,
-					alarm_time: '2023-07-29 08:27:14',
-					alarm_type: '心率异常',
-					alarm_text: '心率过低(低于40次/分)',
-				},
-				{
-					id: 33,
-					alarm_time: '2023-07-29 20:04:45',
-					alarm_type: '心率异常',
-					alarm_text: '心率过低(低于40次/分)',
-				},
-				{
-					id: 34,
-					alarm_time: '2023-07-29 20:05:40',
-					alarm_type: '心率异常',
-					alarm_text: '心率过低(低于40次/分)',
-				},
-				{
-					id: 34,
-					alarm_time: '2023-07-29 20:05:40',
-					alarm_type: '心率异常',
-					alarm_text: '心率过低(低于40次/分)',
-				},
-				{
-					id: 34,
-					alarm_time: '2023-07-29 20:05:40',
-					alarm_type: '心率异常',
-					alarm_text: '心率过低(低于40次/分)',
-				},
-			],
-			count: 5,
-		})
+	return request({
+		url: `/public/alarm/list/data/api`,
+		method: 'post',
+		data: qs.stringify(params),
+		headers: {
+			'content-type': 'application/x-www-form-urlencoded',
+		},
 	})
+
+	// return new Promise((resolve) => {
+	// 	resolve({
+	// 		result: 'success',
+	// 		message: 'success',
+	// 		alarm_datas: [
+	// 			{
+	// 				id: 22,
+	// 				alarm_time: '2023-07-29 08:27:14',
+	// 				alarm_type: '心率异常',
+	// 				alarm_text: '心率过低(低于40次/分)',
+	// 			},
+	// 			{
+	// 				id: 33,
+	// 				alarm_time: '2023-07-29 20:04:45',
+	// 				alarm_type: '心率异常',
+	// 				alarm_text: '心率过低(低于40次/分)',
+	// 			},
+	// 			{
+	// 				id: 34,
+	// 				alarm_time: '2023-07-29 20:05:40',
+	// 				alarm_type: '心率异常',
+	// 				alarm_text: '心率过低(低于40次/分)',
+	// 			},
+	// 			{
+	// 				id: 34,
+	// 				alarm_time: '2023-07-29 20:05:40',
+	// 				alarm_type: '心率异常',
+	// 				alarm_text: '心率过低(低于40次/分)',
+	// 			},
+	// 			{
+	// 				id: 34,
+	// 				alarm_time: '2023-07-29 20:05:40',
+	// 				alarm_type: '心率异常',
+	// 				alarm_text: '心率过低(低于40次/分)',
+	// 			},
+	// 		],
+	// 		count: 5,
+	// 	})
+	// })
 }
 
 // 处理告警
@@ -120,5 +120,17 @@ export function handleAlarmSolved(params) {
 		url: `/public/immediate/process/api`,
 		method: 'post',
 		data: params,
+	})
+}
+
+// 获取区域告警列表数据
+export function fetchRoomAlarmList(params) {
+	return request({
+		url: `/home/toilet/info/api`,
+		method: 'post',
+		data: qs.stringify(params),
+		headers: {
+			'content-type': 'application/x-www-form-urlencoded',
+		},
 	})
 }
