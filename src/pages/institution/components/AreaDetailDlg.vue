@@ -48,6 +48,7 @@
 </template>
 <script>
 import * as echarts from 'echarts'
+import { Chart } from '@antv/g2'
 export default {
 	props: {
 		visible: {
@@ -117,7 +118,7 @@ export default {
 
 		//处理窗体打开
 		handleDlgOpen() {
-			this.drawBarChart()
+			this.drawChart()
 		},
 
 		//绘制矩形
@@ -131,6 +132,7 @@ export default {
 			// prettier-ignore
 			let data = [0,0,0,0,0,0,0,0,0,0,0,0,0];
 			let data2 = [1, 1, 1, 1, 1, 1]
+			let data3 = [4, 5, 1, 1, 1, 1]
 			let yData = [0, 5, 10]
 			let option = {
 				xAxis: {
@@ -152,9 +154,9 @@ export default {
 				},
 				yAxis: {
 					data: yData,
-					type : 'value',
+					type: 'value',
 					min: 0,
-					max : 10,
+					max: 10,
 					axisLine: {
 						show: false,
 					},
@@ -201,31 +203,226 @@ export default {
 						type: 'bar',
 						showBackground: true,
 						stack: 'Ad',
-						// itemStyle: {
-						// 	color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-						// 		{ offset: 0, color: '#83bff6' },
-						// 		{ offset: 0.5, color: '#188df0' },
-						// 		{ offset: 1, color: '#188df0' },
-						// 	]),
-						// },
-						// emphasis: {
-						// 	itemStyle: {
-						// 		color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-						// 			{ offset: 0, color: '#2378f7' },
-						// 			{ offset: 0.7, color: '#2378f7' },
-						// 			{ offset: 1, color: '#83bff6' },
-						// 		]),
-						// 	},
-						// },
+						itemStyle: {
+							color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+								{ offset: 0, color: '#83bff6' },
+								{ offset: 0.5, color: '#188df0' },
+								{ offset: 1, color: '#188df0' },
+							]),
+						},
+						emphasis: {
+							itemStyle: {
+								color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+									{ offset: 0, color: '#2378f7' },
+									{ offset: 0.7, color: '#2378f7' },
+									{ offset: 1, color: '#83bff6' },
+								]),
+							},
+						},
 						data: data2,
+					},
+
+					{
+						type: 'bar',
+						showBackground: true,
+						stack: 'Ad',
+						itemStyle: {
+							color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+								{ offset: 0, color: '#83bff6' },
+								{ offset: 0.5, color: '#188df0' },
+								{ offset: 1, color: '#188df0' },
+							]),
+						},
+						emphasis: {
+							itemStyle: {
+								color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+									{ offset: 0, color: '#2378f7' },
+									{ offset: 0.7, color: '#2378f7' },
+									{ offset: 1, color: '#83bff6' },
+								]),
+							},
+						},
+						data: data3,
 					},
 				],
 			}
+
+			// 假设你已经引入了 ECharts 库，并创建了一个容器 div，id 为 'chart-container'
+
+			// 数据示例
+			const dataV = [
+				{ time: '2023-01', range: [10, 20] },
+				{ time: '2023-02', range: [15, 25] },
+				{ time: '2023-03', range: [18, 30] },
+				// 更多数据...
+			]
+
+			// 转换数据
+			const seriesData = dataV.map((item) => ({
+				name: item.time,
+				value: [item.time, ...item.range],
+			}))
+
+			// 自定义绘制区间条形图
+			option = {
+				xAxis: {
+					type: 'time',
+				},
+				yAxis: {},
+				series: [
+					{
+						type: 'custom',
+						renderItem: function (params, api) {
+							const yValue = api.value(2)
+							const start = api.coord([api.value(0), yValue[0]])
+							const end = api.coord([api.value(0), yValue[1]])
+							const height = api.size([0, yValue[1] - yValue[0]])[1]
+
+							const rectShape = echarts.graphic.clipRectByRect(
+								{
+									x: start[0],
+									y: start[1],
+									width: 20, // 设置条形图宽度
+									height: height,
+								},
+								{
+									x: start[0],
+									y: 0,
+									width: end[0] - start[0],
+									height: myChart.getHeight(),
+								},
+							)
+
+							return {
+								type: 'rect',
+								shape: rectShape,
+								style: api.style(),
+							}
+						},
+						encode: {
+							x: 'time',
+							y: [1, 2], // 区间范围的数据索引
+						},
+						data: seriesData,
+					},
+				],
+			}
+
+			// 使用刚指定的配置项和数据显示图表。
+			myChart.setOption(option)
+
 			myChart.on('click', function (params) {
 				console.log('params', params)
 			})
 
 			option && myChart.setOption(option)
+		},
+
+		drawChart() {
+			const chartDom = this.$refs.bar
+
+			const chart = new Chart({
+				container: chartDom,
+				autoFit: true,
+				theme: 'classic',
+			})
+
+			const timeArray = this.generateTimeArrayUntilNow()
+			console.log('timeArray', timeArray)
+			let dataMap = timeArray.map((item) => {
+				let obj = {}
+				Object.assign(obj, {
+					time: item,
+					start: 0,
+					end: 10,
+				})
+				return obj
+			})
+
+			dataMap.push({
+				time: '17:00',
+				start: 3,
+				end: 9,
+				flag: 1,
+			})
+
+			chart.options({
+				axis: {
+					x: {
+						labelAutoHide: true,
+					},
+					y: {
+						min: 0,
+						max: 10,
+					},
+				},
+			})
+
+			chart
+				.interval()
+				.style({
+					radius: 6,
+					fill(d) {
+						if (d.flag === 1) {
+							return 'red'
+						} else {
+							return '#fff'
+						}
+					},
+					stroke: '#C1C1C1',
+					maxWidth: 14,
+				})
+				.data(dataMap)
+				.encode('x', 'time')
+				.encode('y', ['end', 'start'])
+				.interaction('tooltip', {
+					// render 回调方法返回一个innerHTML 或者 DOM
+					render: (event, { title, items }) => {
+						console.log('event', event)
+						return '发生离线告警'
+					},
+				})
+				.scrollbar('x', { value: 1 })
+
+			chart.render()
+		},
+
+		generateTimeArray() {
+			const hours = 24
+			const minutesInHour = 60
+			const timeSlot = 10
+			const result = []
+
+			for (let hour = 0; hour < hours; hour++) {
+				for (let minute = 0; minute < minutesInHour; minute += timeSlot) {
+					const formattedHour = String(hour).padStart(2, '0')
+					const formattedMinute = String(minute).padStart(2, '0')
+					result.push(`${formattedHour}:${formattedMinute}`)
+				}
+			}
+
+			return result
+		},
+
+		generateTimeArrayUntilNow() {
+			const currentDate = new Date()
+			const currentHour = currentDate.getHours()
+			const currentMinute = currentDate.getMinutes()
+			const minutesInHour = 60
+			const timeSlot = 10
+			const result = []
+
+			for (let hour = 0; hour <= currentHour; hour++) {
+				const lastHour = hour === currentHour ? currentMinute / timeSlot : minutesInHour / timeSlot
+
+				for (let minute = 0; minute < lastHour; minute++) {
+					const formattedHour = String(hour).padStart(2, '0')
+					const formattedMinute = String(minute * timeSlot).padStart(2, '0')
+					result.push(`${formattedHour}:${formattedMinute}`)
+				}
+			}
+
+			return result
 		},
 	},
 }
