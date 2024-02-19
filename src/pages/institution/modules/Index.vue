@@ -19,11 +19,20 @@
 						v-for="(item, index) in roomAlertData"
 						class="list-complete-item"
 						:cardInfo="item"
+						:ifAlert="true"
 						:key="index"
 						@click.native="openAreaDlg(item)"
 					></AreaCard>
 				</transition-group>
 				<!-- </div> -->
+				<div class="panel-right-wrap">
+					<AreaCard
+						v-for="(item, index) in areaData"
+						:cardInfo="item"
+						:key="index"
+						@click.native="openAreaDlg(item)"
+					></AreaCard>
+				</div>
 			</el-scrollbar>
 		</section>
 
@@ -50,12 +59,33 @@ export default {
 	data() {
 		return {
 			visible: false,
-			dataList: [1, 2, 3],
+			dataList: [
+				{
+					data: {
+						room_name: '212121',
+						alarm_msg: '在线',
+					},
+				},
+			],
 		}
 	},
 
 	computed: {
-		...mapGetters(['classifiedData', 'roomAlertData']),
+		...mapGetters(['classifiedData', 'roomAlertData', 'toiletData']),
+
+		areaData() {
+			return this.toiletData.map((item) => {
+				let obj = {
+					data: {},
+				}
+				Object.assign(obj.data, {
+					room_name: item.device_name,
+					alarm_msg: item.status,
+					device_id: item.device_id,
+				})
+				return obj
+			})
+		},
 	},
 
 	mounted() {
@@ -147,7 +177,6 @@ export default {
 
 	.panel-right-wrap {
 		flex: auto;
-		height: 100%;
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;

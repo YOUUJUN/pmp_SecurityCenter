@@ -3,7 +3,7 @@
 		<img class="card-logo" :src="alertImgPath" />
 		<span>{{ cardInfo.data.room_name }}</span>
 		<span>{{ cardInfo.data.alarm_msg }}</span>
-		<div class="card-num" v-if="alertCount !== 0">{{ alertCount }}s</div>
+		<div class="card-num" v-if="alertCount !== 0 && ifAlert">{{ alertCount }}s</div>
 	</div>
 </template>
 
@@ -19,6 +19,11 @@ export default {
 			default() {
 				return {}
 			},
+		},
+
+		ifAlert: {
+			type: Boolean,
+			default: false,
 		},
 	},
 

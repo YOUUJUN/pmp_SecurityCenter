@@ -103,7 +103,7 @@ let pageConstruction = buildPageSync()
 
 delete require.cache[module.id]
 
-let publicPath = isDev ? '/' : '/fm_dynamic_perception/static/templates/default/zh_CN'
+let publicPath = isDev ? '/' : '/zdt_security_center/static/templates/default/'
 
 module.exports = function () {
 	return {

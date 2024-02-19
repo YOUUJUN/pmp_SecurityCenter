@@ -13,7 +13,7 @@ export const constantRoutes = [
 		children: [
 			{
 				path: '',
-				name: 'ControlPanel',
+				name: 'ControlPanel', 
 				component: () => import('../views/ControlPanel.vue'),
 			},
 
@@ -33,15 +33,15 @@ export const constantRoutes = [
 export function resetRouter(router) {
 	// 用初始化的matcher替换当前router的matcher
 	router.matcher = new VueRouter({
-		mode: 'history',
-		base: '/institution',
+		mode: 'hash',
+		base: '/',
 		routes: constantRoutes,
 	}).matcher
 }
 
 const router = new VueRouter({
-	mode: 'history',
-	base: '/institution',
+	mode: 'hash',
+	base: '/',
 	routes: constantRoutes,
 })
 
