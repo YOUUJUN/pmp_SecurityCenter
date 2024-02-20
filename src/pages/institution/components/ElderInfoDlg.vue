@@ -25,9 +25,11 @@
 					<div class="cursor-bar-wrap">
 						<CursorBar :value="breathValue" type="breath"></CursorBar>
 						<CursorBar :value="heartValue" type="heart"></CursorBar>
+						
 					</div>
-					<div class="bar-chart" ref="heartBar"></div>
-					<div class="bar-chart" ref="breathBar"></div>
+					<!-- <div class="bar-chart" ref="heartBar"></div>
+					<div class="bar-chart" ref="breathBar"></div> -->
+					<HeartLine :width="701" :height="420" ref="heartLine"></HeartLine>
 				</div>
 				<div class="dlg-body-right">
 					<AlarmTable type="bed" :bedId="roomData.bed_id"></AlarmTable>
@@ -45,6 +47,7 @@ import { Chart } from '@antv/g2'
 import CursorBar from '@/components/CursorBar/CursorBar.vue'
 import HealthReport from './ElderInfoParts/HealthReport.vue'
 import AlarmTable from './AlarmTable.vue'
+import HeartLine from './HeartRate/HeartLine.vue'
 
 import { mapActions, mapGetters } from 'vuex'
 
@@ -55,6 +58,7 @@ export default {
 		CursorBar,
 		HealthReport,
 		AlarmTable,
+		HeartLine,
 	},
 
 	props: {
@@ -124,8 +128,9 @@ export default {
 					this.breathValue = breathing
 					this.heartValue = heart
 
-					this.heartChart && this.updateHeartChart()
-					this.breathChart && this.updateBreathChart()
+					// this.heartChart && this.updateHeartChart()
+					// this.breathChart && this.updateBreathChart()
+					this.$refs.heartLine.drawLine(heart)
 				}
 			},
 		},
@@ -146,8 +151,8 @@ export default {
 					this.MonitorData = monitor_period
 				}
 
-				this.drawHeartChart()
-				this.drawBreathChart()
+				// this.drawHeartChart()
+				// this.drawBreathChart()
 
 				this.$refs.healthReport.handelDayReport(elderId, reportDate)
 			})
