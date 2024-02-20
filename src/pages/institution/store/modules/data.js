@@ -92,7 +92,6 @@ const mutations = {
 		})
 
 		Object.assign(alarmBed, {
-			status: alarming,
 			warn_text: alarming,
 			alarmList,
 			warn_count: alarmBed.warn_count + 1,

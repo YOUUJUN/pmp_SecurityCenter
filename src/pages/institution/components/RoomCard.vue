@@ -123,6 +123,7 @@ export default {
 	watch: {
 		roomData: {
 			deep: true,
+			immediate: true,
 			handler(newValue) {
 				let { warn_text, warn_count, alertFlag } = newValue
 				this.alertClass = getAlertLevelClass(warn_text, alertFlag, warn_count)
@@ -170,7 +171,7 @@ export default {
 
 		//启动卡片告警
 		setCardAlarm() {
-			const { bed_id } = this.roomData
+			const { bed_id, warn_text } = this.roomData
 			if (this.alertTimer) {
 				clearInterval(this.alertTimer)
 			}
@@ -178,6 +179,11 @@ export default {
 				this.resetBedAlarm({
 					bed_id,
 				})
+			})
+
+			this.$emit('invokeAudioAlarm', {
+				warn_text,
+				bed_id,
 			})
 		},
 

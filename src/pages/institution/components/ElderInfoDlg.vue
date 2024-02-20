@@ -25,11 +25,12 @@
 					<div class="cursor-bar-wrap">
 						<CursorBar :value="breathValue" type="breath"></CursorBar>
 						<CursorBar :value="heartValue" type="heart"></CursorBar>
-						
 					</div>
 					<!-- <div class="bar-chart" ref="heartBar"></div>
 					<div class="bar-chart" ref="breathBar"></div> -->
-					<HeartLine :width="701" :height="420" ref="heartLine"></HeartLine>
+					<!-- <HeartLine :width="701" :height="420" ref="heartLine"></HeartLine> -->
+					<BreathLine></BreathLine>
+					<HeartElect></HeartElect>
 				</div>
 				<div class="dlg-body-right">
 					<AlarmTable type="bed" :bedId="roomData.bed_id"></AlarmTable>
@@ -48,6 +49,8 @@ import CursorBar from '@/components/CursorBar/CursorBar.vue'
 import HealthReport from './ElderInfoParts/HealthReport.vue'
 import AlarmTable from './AlarmTable.vue'
 import HeartLine from './HeartRate/HeartLine.vue'
+import HeartElect from './HeartRate/HeartElect.vue'
+import BreathLine from './HeartRate/BreathLine.vue'
 
 import { mapActions, mapGetters } from 'vuex'
 
@@ -58,7 +61,9 @@ export default {
 		CursorBar,
 		HealthReport,
 		AlarmTable,
-		HeartLine,
+		// HeartLine,
+		HeartElect,
+		BreathLine,
 	},
 
 	props: {

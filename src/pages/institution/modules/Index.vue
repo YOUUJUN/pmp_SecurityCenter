@@ -5,7 +5,12 @@
 
 			<el-scrollbar class="scroll-wrap" style="height: 100%">
 				<div class="panel-left-wrap">
-					<RoomCard v-for="(item, index) in classifiedData" :roomData="item" :key="index"></RoomCard>
+					<RoomCard
+						v-for="(item, index) in classifiedData"
+						:roomData="item"
+						:key="item.only_bed_id"
+						@invokeAudioAlarm="handleAudioAlarm"
+					></RoomCard>
 				</div>
 			</el-scrollbar>
 		</section>
@@ -37,6 +42,8 @@
 		</section>
 
 		<AreaDetailDlg ref="areaDlg" :visible.sync="visible"></AreaDetailDlg>
+
+		<div ref="audioWrap" style="display: none"></div>
 	</article>
 </template>
 
@@ -46,6 +53,8 @@ import AreaCard from '@/pages/institution/components/AreaCard.vue'
 import AreaDetailDlg from '../components/AreaDetailDlg.vue'
 
 import { mapGetters } from 'vuex'
+
+import { getAudioUrl } from '@/api/dict'
 
 export default {
 	name: 'SecurityCenterInstitutionIndex',
@@ -67,6 +76,9 @@ export default {
 					},
 				},
 			],
+
+			//告警语音循环
+			talkLoopHandle: {},
 		}
 	},
 
@@ -103,6 +115,52 @@ export default {
 
 		add() {
 			this.dataList.splice(0, 0, Math.random())
+		},
+
+		//触发语音告警
+		handleAudioAlarm(payload) {
+			const { warn_text, bed_id } = payload
+			let alarmType = ''
+			switch (warn_text.trim()) {
+				case '呼吸暂停':
+				case '呼吸过速':
+				case '呼吸过缓':
+					alarmType = 'breath'
+					break
+				case '心率过速':
+				case '心率过缓':
+					alarmType = 'heart'
+					break
+				case '离床未归':
+					alarmType = 'leave'
+					break
+			}
+			const audioUrl = getAudioUrl(alarmType)
+			this.doTalk(audioUrl, bed_id)
+		},
+
+		//开启语音播报
+		async doTalk(url, bed_id) {
+			this.creatAudio(url)
+
+			let count = 1
+			let loopHandle = setInterval(() => {
+				this.creatAudio(url)
+				count++
+				if (count > 2) {
+					clearInterval(loopHandle)
+				}
+			}, 5500)
+			this.talkLoopHandle[bed_id] = loopHandle
+		},
+
+		//创建语音播报
+		creatAudio(url) {
+			let shell = this.$refs.audioWrap
+			let iframe = document.createElement('iframe')
+			iframe.setAttribute('allow', 'autoplay')
+			iframe.setAttribute('src', `${url}#toolbar=0`)
+			shell.appendChild(iframe)
 		},
 	},
 }

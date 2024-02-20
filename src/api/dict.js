@@ -73,3 +73,20 @@ export function getAlertLevelImg(msg_text) {
 		alertClass,
 	}
 }
+
+//获取告警语音
+export function getAudioUrl(name) {
+	const audioUrl = {
+		breath: require('@/assets/audios/breath.mp3'), // 呼吸异常
+		fall: require('@/assets/audios/fall.mp3'), // 跌倒告警
+		heart: require('@/assets/audios/heart.mp3'), // 心率异常
+		leave: require('@/assets/audios/leave_bed.mp3'), // 离床未归
+		urgent: require('@/assets/audios/urgent.mp3'), // 紧急呼叫
+	}
+
+	if (audioUrl[name]) {
+		return `${audioUrl[name]}`
+	} else {
+		return ''
+	}
+}

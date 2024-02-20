@@ -12,7 +12,7 @@
 		</div>
 
 		<div class="panel-body">
-			<el-table class="dlg-table" :data="tableData" style="width: 100%">
+			<el-table class="dlg-table" :data="tableData" height="383px" style="width: 100%">
 				<el-table-column prop="alarm_time" label="时间" width="165px" align="center"></el-table-column>
 				<el-table-column prop="alarm_type" label="事件" align="center"></el-table-column>
 				<el-table-column label="操作" align="center">
