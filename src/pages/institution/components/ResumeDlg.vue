@@ -56,7 +56,10 @@ export default {
 			this.$emit('update:visible', false)
 		},
 
-		handleOpenElderDlg(id) {},
+		handleOpenElderDlg(elderId) {
+			this.$emit('invokeElderInfoDlgOpen', elderId)
+			this.handleClose()
+		},
 	},
 }
 </script>

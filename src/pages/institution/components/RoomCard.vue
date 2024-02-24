@@ -50,7 +50,11 @@
 			:roomData="roomData"
 		></ElderInfoDlg>
 
-		<ResumeDlg :visible.sync="visibleResumeDlg" :roomData="roomData"></ResumeDlg>
+		<ResumeDlg
+			:visible.sync="visibleResumeDlg"
+			:roomData="roomData"
+			@invokeElderInfoDlgOpen="handleOpenElderDlg"
+		></ResumeDlg>
 	</div>
 </template>
 
