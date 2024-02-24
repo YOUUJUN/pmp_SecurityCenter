@@ -75,6 +75,9 @@ export default {
 
 		//获取告警列表数据
 		getAlarmListData() {
+			if (!this.choicedDate) {
+				return
+			}
 			console.log('choicedDate', this.choicedDate)
 			let date = moment(this.choicedDate).format('YYYY-MM-DD')
 			let page = this.page
@@ -90,7 +93,7 @@ export default {
 			})
 				.then((res) => {
 					console.log('res', res)
-					const { result, alarm_datas, count } = res
+					const { result, alarm_datas, count } = res.data
 					if (result === 'success') {
 						this.tableData = alarm_datas
 						this.total = count

@@ -6,9 +6,10 @@
 			<el-scrollbar class="scroll-wrap" style="height: 100%">
 				<div class="panel-left-wrap">
 					<RoomCard
-						v-for="(item, index) in classifiedData"
+						v-for="(item, index) in roomData"
 						:roomData="item"
 						:key="item.only_bed_id"
+						v-show="ifBedVisible(item.only_bed_id)"
 						@invokeAudioAlarm="handleAudioAlarm"
 					></RoomCard>
 				</div>
@@ -83,7 +84,7 @@ export default {
 	},
 
 	computed: {
-		...mapGetters(['classifiedData', 'roomAlertData', 'toiletData']),
+		...mapGetters(['roomData', 'classifiedData', 'roomAlertData', 'toiletData']),
 
 		areaData() {
 			return this.toiletData.map((item) => {
@@ -97,6 +98,18 @@ export default {
 				})
 				return obj
 			})
+		},
+
+		//控制床位是否显示
+		ifBedVisible() {
+			return (bedId) => {
+				const row = this.classifiedData.find((item) => item.only_bed_id === bedId)
+				if (row) {
+					return true
+				} else {
+					return false
+				}
+			}
 		},
 	},
 
