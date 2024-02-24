@@ -15,7 +15,7 @@
 				<div class="bar-chart" ref="bar"></div>
 			</div>
 			<div class="dlg-body-right">
-				<AlarmTable type="room" :bedId="device_id"></AlarmTable>
+				<AlarmTable type="room" :id="cardInfo.room_id" tableType="toilet"></AlarmTable>
 			</div>
 		</section>
 	</el-dialog>
@@ -31,6 +31,14 @@ export default {
 		visible: {
 			type: Boolean,
 			default: false,
+		},
+
+		//区域信息
+		cardInfo: {
+			type: Object,
+			default() {
+				return {}
+			},
 		},
 	},
 
@@ -87,9 +95,10 @@ export default {
 	methods: {
 		//初始化数据
 		setData(payload) {
+			console.log('payload', payload)
 			const { data } = payload
-			const { device_id, alarm_msg, name } = data
-			this.areaName = `${name} - 卫生间`
+			const { device_id, alarm_msg, room_name } = data
+			this.areaName = `${room_name} - 卫生间`
 			this.statusText = alarm_msg
 			this.device_id = device_id
 		},

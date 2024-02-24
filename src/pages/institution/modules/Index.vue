@@ -87,6 +87,7 @@ export default {
 		...mapGetters(['roomData', 'classifiedData', 'roomAlertData', 'toiletData']),
 
 		areaData() {
+			console.log('toiletData', this.toiletData)
 			return this.toiletData.map((item) => {
 				let obj = {
 					data: {},
@@ -95,6 +96,8 @@ export default {
 					room_name: item.device_name,
 					alarm_msg: item.status,
 					device_id: item.device_id,
+					only_room_id: item.only_room_id,
+					room_id: item.room_id
 				})
 				return obj
 			})

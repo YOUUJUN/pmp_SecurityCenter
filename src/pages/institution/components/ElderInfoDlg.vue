@@ -33,7 +33,7 @@
 					<HeartElect></HeartElect>
 				</div>
 				<div class="dlg-body-right">
-					<AlarmTable type="bed" :bedId="roomData.bed_id"></AlarmTable>
+					<AlarmTable tableType="bed" :id="roomData.bed_id"></AlarmTable>
 				</div>
 			</section>
 

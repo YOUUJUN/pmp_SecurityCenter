@@ -41,7 +41,7 @@ import { fetchAlarmList, handleAlarmSolved, fetchRoomAlarmList } from '@/api/sec
 import moment from 'moment'
 export default {
 	props: {
-		bedId: {
+		id: {
 			type: Number,
 			default: 0,
 		},
@@ -84,24 +84,37 @@ export default {
 
 			const fetchAction = this.tableType === 'bed' ? fetchAlarmList : fetchRoomAlarmList
 
-			fetchAction({
-				type: 'inst',
-				id: this.bedId,
-				limit: 5,
-				date,
-				page,
-			})
-				.then((res) => {
-					console.log('res', res)
-					const { result, alarm_datas, count } = res.data
-					if (result === 'success') {
-						this.tableData = alarm_datas
-						this.total = count
-					}
+			if (this.tableType === 'bed') {
+				fetchAction({
+					type: 'inst',
+					id: this.id,
+					limit: 5,
+					date,
+					page,
 				})
-				.catch((err) => {
-					console.error('err', err)
+					.then((res) => {
+						console.log('res', res)
+						const { result, alarm_datas, count } = res.data
+						if (result === 'success') {
+							this.tableData = alarm_datas
+							this.total = count
+						}
+					})
+					.catch((err) => {
+						console.error('err', err)
+					})
+			} else {
+				fetchAction({
+					// device_id: this.id,
+					device_id: 2,
 				})
+					.then((res) => {
+						console.log('res', res)
+					})
+					.catch((err) => {
+						console.error('err', err)
+					})
+			}
 		},
 
 		//处理告警
