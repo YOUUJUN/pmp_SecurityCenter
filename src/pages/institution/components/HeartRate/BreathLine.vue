@@ -96,10 +96,10 @@ export default {
 			ctx.strokeWidth = 1
 			ctx.clearRect(this.xValue * 6, 0, 25, 750)
 			this.xValue = this.xValue + 1
-			let cutValue = value - 65
+			let cutValue = value - 16
 			console.log('cutValue', cutValue)
 			let num = 76
-			num = Math.sin(this.xValue / 5) * Math.abs(cutValue) + 76
+			num = Math.sin(cutValue / 5) * 10 + 76
 
 			ctx.lineTo(this.xValue * 6, num)
 			ctx.stroke()

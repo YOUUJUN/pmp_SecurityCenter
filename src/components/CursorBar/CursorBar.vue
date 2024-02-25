@@ -17,7 +17,7 @@
 					<span>{{ value }}</span>
 				</div>
 				<div class="cursor-box-bottom">
-					<div class="cursor-point"></div>
+					<div class="cursor-point" :class="colorClass"></div>
 				</div>
 			</div>
 		</div>
@@ -45,15 +45,16 @@ export default {
 	computed: {
 		leftValue() {
 			let value = this.value
+			console.log('value1', value)
 			if (this.type === 'heart') {
 				if (value <= 40) {
-					console.log(1)
+					console.log('value11111',1)
 					return '0'
 				} else if (40 < value > 90) {
-					console.log(2)
+					console.log('value11111',2)
 					return '33%'
 				} else {
-					console.log(3)
+					console.log('value11111',3)
 					return '66%'
 				}
 			} else {
@@ -77,6 +78,19 @@ export default {
 				return '呼吸'
 			}
 		},
+
+		colorClass() {
+			let text = ''
+			if (this.leftValue === '0') {
+				text = 'line-left'
+			} else if (this.leftValue === '33%') {
+				text = 'line-center'
+			} else if (this.leftValue === '66%') {
+				text = 'line-right'
+			}
+
+			return text
+		},
 	},
 	data() {
 		return {}
@@ -87,6 +101,18 @@ export default {
 @lowColor: #fe4d4f;
 @normalColor: #5bc196;
 @heighColor: #c2c2c2;
+
+.line-left {
+	background: @lowColor !important;
+}
+
+.line-center {
+	background: @normalColor !important;
+}
+
+.line-right {
+	background: @heighColor !important;
+}
 
 .bar-shell {
 	width: 100%;
@@ -101,18 +127,6 @@ export default {
 	.bar-line-wrap {
 		position: relative;
 		height: 4px;
-
-		.line-left {
-			background: @lowColor;
-		}
-
-		.line-center {
-			background: @normalColor;
-		}
-
-		.line-right {
-			background: @heighColor;
-		}
 	}
 
 	.bar-text-wrap {
