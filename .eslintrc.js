@@ -15,5 +15,6 @@ module.exports = {
 		'valid-typeof': 'off',
 		'vue/no-unused-vars': 'off',
 		'prettier/prettier': 'off',
+		'no-unreachable': 'off'
 	},
 }

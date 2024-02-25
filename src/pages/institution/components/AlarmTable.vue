@@ -122,13 +122,14 @@ export default {
 			const { id } = row
 			console.log('row', row)
 			handleAlarmSolved({
-				ids: [id],
+				ids: `[${id}]`,
 			})
 				.then((res) => {
 					console.log('res', res)
-					const { result, message } = res
+					const { result, message } = res.data
 					if (result === 'success') {
 						this.$message.success(message)
+						this.getAlarmListData()
 					}
 				})
 				.catch((err) => {})

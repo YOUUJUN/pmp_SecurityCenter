@@ -175,7 +175,8 @@ export default {
 
 		//启动卡片告警
 		setCardAlarm() {
-			const { bed_id, warn_text } = this.roomData
+			console.log('roomData', this.roomData)
+			const { bed_id, warn_text, room_name, bed_room } = this.roomData
 			if (this.alertTimer) {
 				clearInterval(this.alertTimer)
 			}
@@ -188,6 +189,7 @@ export default {
 			this.$emit('invokeAudioAlarm', {
 				warn_text,
 				bed_id,
+				bed_name: `${room_name}-${bed_room}`,
 			})
 		},
 

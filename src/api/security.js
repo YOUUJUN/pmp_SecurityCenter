@@ -119,7 +119,10 @@ export function handleAlarmSolved(params) {
 	return request({
 		url: `/public/immediate/process/api`,
 		method: 'post',
-		data: params,
+		data: qs.stringify(params),
+		headers: {
+			'content-type': 'application/x-www-form-urlencoded',
+		},
 	})
 }
 

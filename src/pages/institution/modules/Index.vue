@@ -52,6 +52,7 @@
 import RoomCard from '@/pages/institution/components/RoomCard.vue'
 import AreaCard from '@/pages/institution/components/AreaCard.vue'
 import AreaDetailDlg from '../components/AreaDetailDlg.vue'
+import AlertNotification from '@/components/Notify/AlertNotification.vue'
 
 import { mapGetters } from 'vuex'
 
@@ -80,6 +81,9 @@ export default {
 
 			//告警语音循环
 			talkLoopHandle: {},
+
+			//告警弹窗队列
+			alertNotifyQueue: [],
 		}
 	},
 
@@ -97,7 +101,7 @@ export default {
 					alarm_msg: item.status,
 					device_id: item.device_id,
 					only_room_id: item.only_room_id,
-					room_id: item.room_id
+					room_id: item.room_id,
 				})
 				return obj
 			})
@@ -153,6 +157,7 @@ export default {
 			}
 			const audioUrl = getAudioUrl(alarmType)
 			this.doTalk(audioUrl, bed_id)
+			this.openAlarmNotification(payload)
 		},
 
 		//开启语音播报
@@ -177,6 +182,53 @@ export default {
 			iframe.setAttribute('allow', 'autoplay')
 			iframe.setAttribute('src', `${url}#toolbar=0`)
 			shell.appendChild(iframe)
+		},
+
+		//打开页面右下角告警弹窗
+		openAlarmNotification(data, alertCallBack) {
+			console.log('this-->', this)
+			let vm = this
+			console.log('data-->', data)
+			const h = this.$createElement
+
+			if (this.alertNotifyQueue.length > 4) {
+				this.handleAlarmPopoverClose()
+			}
+
+			let notifyInstance = this.$notify({
+				message: h(AlertNotification, {
+					props: {
+						renderInfo: data,
+					},
+
+					on: {
+						countover: this.handleAlarmPopoverClose,
+						// resolveAlert: alertCallBack,
+						// handleRTCCall: this.openRTCCallDlg,
+						// stopTalk: this.stopTalk,
+					},
+				}),
+				duration: 0,
+				showClose: false,
+				customClass: 'alert-notification',
+				position: 'bottom-right',
+			})
+
+			this.alertNotifyQueue.push(notifyInstance)
+		},
+
+		//处理页面右下角告警弹窗关闭
+		handleAlarmPopoverClose(target) {
+			console.log('close--')
+			if (target) {
+				let instanceIndex = this.alertNotifyQueue.findIndex((item) => item === target)
+				this.alertNotifyQueue[instanceIndex]?.close()
+				this.alertNotifyQueue.splice(instanceIndex, 1)
+				return
+			}
+
+			let instance = this.alertNotifyQueue.shift()
+			instance?.close()
 		},
 	},
 }

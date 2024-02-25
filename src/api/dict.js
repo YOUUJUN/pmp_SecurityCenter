@@ -12,6 +12,9 @@ export function getAlertLevelClass(msg_text, alertFlag, warn_count) {
 			case '翻身护理':
 				alertClass = 'card-alert'
 				break
+			case '设备离线':
+				alertClass = 'card-off'
+				break
 		}
 
 		return alertClass
@@ -23,6 +26,29 @@ export function getAlertLevelClass(msg_text, alertFlag, warn_count) {
 
 		return alertClass
 	}
+}
+
+//获取弹窗告警颜色
+export function getNotifyClass(msg_text) {
+	let alertClass = ''
+
+	switch (msg_text) {
+		case '呼吸过速':
+		case '呼吸过缓':
+		case '心跳过速':
+		case '心跳过缓':
+			alertClass = 'card-alert'
+			break
+		case '离床未归':
+		case '翻身护理':
+			alertClass = 'card-warn'
+			break
+		case '设备离线':
+			alertClass = 'card-off'
+			break
+	}
+
+	return alertClass
 }
 
 //获取告警图片

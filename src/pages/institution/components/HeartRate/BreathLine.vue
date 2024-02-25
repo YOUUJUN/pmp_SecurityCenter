@@ -22,7 +22,7 @@ export default {
 	methods: {
 		drawSmallGrid(canvas) {
 			var context = canvas.getContext('2d')
-			context.strokeStyle = '#f1dedf'
+			context.strokeStyle = '#fff'
 			context.strokeWidth = 1
 			context.beginPath()
 			for (var x = 0.5; x < 751; x += 3) {
@@ -41,7 +41,7 @@ export default {
 
 		drawMediumGrid(canvas) {
 			var context = canvas.getContext('2d')
-			context.strokeStyle = '#efb7bf'
+			context.strokeStyle = '#eee'
 			context.strokeWidth = 1
 			context.beginPath()
 			for (var x = 0.5; x < 751; x += 15) {
@@ -61,7 +61,7 @@ export default {
 
 		drawBigGrid(canvas) {
 			var context = canvas.getContext('2d')
-			context.strokeStyle = '#c90b0b'
+			context.strokeStyle = '#ddd'
 			context.strokeWidth = 1
 			context.beginPath()
 			for (var x = 0.5; x < 751; x += 75) {
@@ -80,7 +80,7 @@ export default {
 
 		drawLine(canvas) {
 			var ctx = canvas.getContext('2d')
-			ctx.strokeStyle = 'green' // 设置呼吸波的颜色为绿色
+			ctx.strokeStyle = '#E70014' // 设置呼吸波的颜色为绿色
 			ctx.strokeWidth = 1
 			let x = 2
 			setInterval(() => {
