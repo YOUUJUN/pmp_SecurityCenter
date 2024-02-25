@@ -7,16 +7,21 @@
 <script>
 export default {
 	data() {
-		return {}
+		return {
+			xValue: 0,
+			context: null,
+		}
 	},
 
 	mounted() {
 		var canvas = this.$refs.ecg
 		var canvas2 = this.$refs.line
+		this.context = canvas2.getContext('2d')
+
 		this.drawSmallGrid(canvas)
 		this.drawMediumGrid(canvas)
 		this.drawBigGrid(canvas)
-		this.drawLine(canvas2)
+		this.drawLineInit(canvas2)
 	},
 
 	methods: {
@@ -78,24 +83,36 @@ export default {
 			return
 		},
 
-		drawLine(canvas) {
-			var ctx = canvas.getContext('2d')
+		drawLineInit(value) {
+			var ctx = this.context
 			ctx.strokeStyle = '#53C31A'
 			ctx.strokeWidth = 1
-			let x = 2
-			setInterval(() => {
-				ctx.clearRect(x * 6, 0, 25, 750)
-				x = x + 1
-				let num = x % 10 === 0 || x % 10 === 1 ? (Math.random() * 10 - 5) * 10 + 76 : 76
-				ctx.lineTo(x * 6, num)
-				ctx.stroke()
-				if (x > 750 / 6) {
-					x = 2
-					ctx.beginPath()
-				}
-			}, 60)
 			ctx.stroke()
 			ctx.closePath()
+		},
+
+		drawLine(value) {
+			var ctx = this.context
+			ctx.clearRect((this.xValue + 1) * 6, 0, 25, 750)
+			this.xValue = this.xValue + 1
+			let cutValue = value - 65
+			let num = 76
+			if (cutValue >= 0) {
+				num = 76 - cutValue
+			} else {
+				num = 76 - cutValue
+			}
+			console.log('value', value)
+			console.log('num', num)
+			ctx.lineTo(this.xValue * 6, num)
+			ctx.stroke()
+			this.xValue = this.xValue + 1
+			ctx.lineTo(this.xValue * 6, 76)
+			ctx.stroke()
+			if (this.xValue > 750 / 6) {
+				this.xValue = 0
+				ctx.beginPath()
+			}
 		},
 	},
 }

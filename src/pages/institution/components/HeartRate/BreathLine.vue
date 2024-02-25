@@ -7,16 +7,20 @@
 <script>
 export default {
 	data() {
-		return {}
+		return {
+			xValue: 0,
+			context: null,
+		}
 	},
 
 	mounted() {
 		var canvas = this.$refs.ecg
 		var canvas2 = this.$refs.line
+		this.context = canvas2.getContext('2d')
 		this.drawSmallGrid(canvas)
 		this.drawMediumGrid(canvas)
 		this.drawBigGrid(canvas)
-		this.drawLine(canvas2)
+		// this.drawLine2(canvas2)
 	},
 
 	methods: {
@@ -78,7 +82,34 @@ export default {
 			return
 		},
 
-		drawLine(canvas) {
+		drawLineInit(canvas) {
+			var ctx = canvas.getContext('2d')
+			ctx.strokeStyle = '#E70014' // 设置呼吸波的颜色为绿色
+			ctx.strokeWidth = 1
+			ctx.stroke()
+			ctx.closePath()
+		},
+
+		drawLine(value) {
+			var ctx = this.context
+			ctx.strokeStyle = '#E70014' // 设置呼吸波的颜色为绿色
+			ctx.strokeWidth = 1
+			ctx.clearRect(this.xValue * 6, 0, 25, 750)
+			this.xValue = this.xValue + 1
+			let cutValue = value - 65
+			console.log('cutValue', cutValue)
+			let num = 76
+			num = Math.sin(this.xValue / 5) * Math.abs(cutValue) + 76
+
+			ctx.lineTo(this.xValue * 6, num)
+			ctx.stroke()
+			if (this.xValue > 750 / 6) {
+				this.xValue = 0
+				ctx.beginPath()
+			}
+		},
+
+		drawLine2(canvas) {
 			var ctx = canvas.getContext('2d')
 			ctx.strokeStyle = '#E70014' // 设置呼吸波的颜色为绿色
 			ctx.strokeWidth = 1
@@ -86,6 +117,7 @@ export default {
 			setInterval(() => {
 				ctx.clearRect(x * 6, 0, 25, 750)
 				x = x + 1
+				console.log('Math.sin(x / 5)', Math.sin(x / 5) * 10)
 				let num = Math.sin(x / 5) * 10 + 76 // 呼吸波的振幅为100，频率为5
 				ctx.lineTo(x * 6, num)
 				ctx.stroke()

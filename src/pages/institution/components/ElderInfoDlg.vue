@@ -28,9 +28,9 @@
 					</div>
 					<!-- <div class="bar-chart" ref="heartBar"></div>
 					<div class="bar-chart" ref="breathBar"></div> -->
-					<!-- <HeartLine :width="701" :height="420" ref="heartLine"></HeartLine> -->
-					<BreathLine></BreathLine>
-					<HeartElect></HeartElect>
+					<!-- <HeartLine :width="681" :height="221" ref="heartLine"></HeartLine> -->
+					<BreathLine ref="breathLine"></BreathLine>
+					<HeartElect ref="heartLine"></HeartElect>
 				</div>
 				<div class="dlg-body-right">
 					<AlarmTable tableType="bed" :id="roomData.bed_id"></AlarmTable>
@@ -136,6 +136,7 @@ export default {
 					// this.heartChart && this.updateHeartChart()
 					// this.breathChart && this.updateBreathChart()
 					this.$refs.heartLine.drawLine(heart)
+					this.$refs.breathLine.drawLine(breathing)
 				}
 			},
 		},
