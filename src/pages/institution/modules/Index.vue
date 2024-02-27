@@ -162,6 +162,26 @@ export default {
 
 		//开启语音播报
 		async doTalk(url, bed_id) {
+			var text = '南岗畅园2-101发生老人呼吸异常事件，请及时处理'
+			var utterance = new SpeechSynthesisUtterance()
+			utterance.text = text
+			utterance.rate = 0.8 // 设置语速为0.8
+			utterance.pitch = 1.2 // 设置音调为1.2
+			utterance.volume = 0.5 // 设置音量为0.5
+
+			let count = 1
+			let loopHandle = setInterval(() => {
+				speechSynthesis.speak(utterance)
+				count++
+				if (count > 2) {
+					clearInterval(loopHandle)
+				}
+			}, 5500)
+			this.talkLoopHandle[bed_id] = loopHandle
+		},
+
+		//开启语音播报
+		async doTalk2(url, bed_id) {
 			this.creatAudio(url)
 
 			let count = 1

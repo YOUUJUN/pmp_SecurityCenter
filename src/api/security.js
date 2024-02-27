@@ -129,7 +129,7 @@ export function handleAlarmSolved(params) {
 // 获取区域告警列表数据
 export function fetchRoomAlarmList(params) {
 	return request({
-		url: `/home/toilet/info/api`,
+		url: `/inst/toilet/info/api`,
 		method: 'post',
 		data: qs.stringify(params),
 		headers: {

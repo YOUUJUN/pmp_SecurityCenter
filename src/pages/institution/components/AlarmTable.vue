@@ -82,39 +82,26 @@ export default {
 			let date = moment(this.choicedDate).format('YYYY-MM-DD')
 			let page = this.page
 
-			const fetchAction = this.tableType === 'bed' ? fetchAlarmList : fetchRoomAlarmList
+			const fetchAction = this.tableType === 'bed' ? fetchAlarmList : fetchAlarmList
 
-			if (this.tableType === 'bed') {
-				fetchAction({
-					type: 'inst',
-					id: this.id,
-					limit: 5,
-					date,
-					page,
+			fetchAction({
+				type: 'inst',
+				id: this.id,
+				limit: 5,
+				date,
+				page,
+			})
+				.then((res) => {
+					console.log('res', res)
+					const { result, alarm_datas, count } = res.data
+					if (result === 'success') {
+						this.tableData = alarm_datas
+						this.total = count
+					}
 				})
-					.then((res) => {
-						console.log('res', res)
-						const { result, alarm_datas, count } = res.data
-						if (result === 'success') {
-							this.tableData = alarm_datas
-							this.total = count
-						}
-					})
-					.catch((err) => {
-						console.error('err', err)
-					})
-			} else {
-				fetchAction({
-					// device_id: this.id,
-					device_id: 2,
+				.catch((err) => {
+					console.error('err', err)
 				})
-					.then((res) => {
-						console.log('res', res)
-					})
-					.catch((err) => {
-						console.error('err', err)
-					})
-			}
 		},
 
 		//处理告警

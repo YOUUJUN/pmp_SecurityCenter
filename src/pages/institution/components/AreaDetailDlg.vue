@@ -21,6 +21,8 @@
 	</el-dialog>
 </template>
 <script>
+import { fetchRoomAlarmList } from '@/api/security'
+
 import * as echarts from 'echarts'
 import { Chart } from '@antv/g2'
 
@@ -77,6 +79,9 @@ export default {
 			areaName: '101卫生间',
 			statusText: '有人',
 			device_id: 0,
+
+			//图表
+			chart: null,
 		}
 	},
 
@@ -109,7 +114,78 @@ export default {
 
 		//处理窗体打开
 		handleDlgOpen() {
-			this.drawChart()
+			this.$nextTick(() => {
+				fetchRoomAlarmList({
+					device_id: this.device_id,
+				})
+					.then((res) => {
+						console.log('res', res)
+						const response = {
+							result: 'success',
+							message: '数据处理成功!',
+							data: {
+								toilet_status: '无人',
+								toilet_warn: [
+									{
+										id: 64,
+										alarm_time: '2023-08-31 01:28:01',
+										alarm_type: '跌倒告警',
+										alarm_text: '跌倒告警',
+									},
+									{
+										id: 65,
+										alarm_time: '2023-08-31 01:29:24',
+										alarm_type: '跌倒告警',
+										alarm_text: '跌倒告警',
+									},
+								],
+								toilet_event: [
+									{
+										id: 75,
+										name: '有人',
+										start_time: '2023-08-31 01:28:24',
+										end_time: '2023-08-31 01:28:39',
+									},
+									{
+										id: 76,
+										name: '离线',
+										start_time: '2023-08-31 01:28:51',
+										end_time: '2023-08-31 01:29:04',
+									},
+									{
+										id: 78,
+										name: '跌倒',
+										start_time: '2023-08-31 01:29:24',
+										end_time: '2023-08-31 01:29:40',
+									},
+								],
+							},
+						}
+						const { result, data } = response
+						if (result === 'success') {
+							const { toilet_status, toilet_warn, toilet_event } = data
+							const warnArr = toilet_event.map((item) => {
+								let obj = {}
+								const start_time = this.formatTime(item.start_time)
+								const end_time = this.formatTime(item.end_time)
+								const diff = this.calculateTimeDifference(item.start_time, item.end_time)
+								Object.assign(obj, {
+									time: this.formatTime(item.start_time),
+									start: this.extractMinutes(start_time),
+									end: this.extractMinutes(start_time) + diff,
+									flag: 1,
+								})
+
+								return obj
+							}, [])
+
+							console.log('warnArr', warnArr)
+
+							this.drawChart()
+						}
+					})
+					.catch((err) => {})
+			})
 		},
 
 		//绘制矩形
@@ -309,7 +385,8 @@ export default {
 			option && myChart.setOption(option)
 		},
 
-		drawChart() {
+		drawChart(dataArr = []) {
+			console.log('cardInfo', this.cardInfo)
 			const chartDom = this.$refs.bar
 
 			const chart = new Chart({
@@ -336,6 +413,8 @@ export default {
 				end: 9,
 				flag: 1,
 			})
+
+			dataMap = dataMap.concat(dataArr)
 
 			chart.options({
 				axis: {
@@ -376,6 +455,7 @@ export default {
 				.scrollbar('x', { value: 1 })
 
 			chart.render()
+			this.chart = chart
 		},
 
 		generateTimeArray() {
@@ -414,6 +494,58 @@ export default {
 			}
 
 			return result
+		},
+
+		formatTime(dateTimeString) {
+			const date = new Date(dateTimeString)
+			const hours = date.getHours()
+			const minutes = date.getMinutes()
+
+			const formattedHours = hours < 10 ? '0' + hours : hours
+			const formattedMinutes = minutes < 10 ? '0' + minutes : minutes
+			return `${hours}:${formattedMinutes}`
+		},
+
+		timeRangeToArrays(startTime, endTime, intervalMinutes) {
+			const start = new Date(`2000-01-01 ${startTime}`)
+			const end = new Date(`2000-01-01 ${endTime}`)
+			const intervalMilliseconds = intervalMinutes * 60 * 1000
+
+			const result = []
+			let current = start
+
+			while (current <= end) {
+				const formattedTime = `${current.getHours()}:${
+					current.getMinutes() < 10 ? '0' : ''
+				}${current.getMinutes()}`
+				result.push(formattedTime)
+
+				current = new Date(current.getTime() + intervalMilliseconds)
+			}
+
+			return result
+		},
+
+		extractMinutes(time) {
+			const parts = time.split(':')
+			if (parts.length === 2) {
+				const minutes = parseInt(parts[1], 10)
+				if (!isNaN(minutes)) {
+					return minutes
+				}
+			}
+			// 默认返回 0 或者其他处理方式，取决于你的需求
+			return 0
+		},
+
+		calculateTimeDifference(startTime, endTime) {
+			const start = new Date(startTime)
+			const end = new Date(endTime)
+
+			// 计算时间差（以分钟为单位）
+			const timeDifference = Math.floor((end - start) / (1000 * 60))
+
+			return timeDifference
 		},
 	},
 }
@@ -492,6 +624,10 @@ export default {
 			display: flex;
 			flex-direction: column;
 			align-items: center;
+
+			::v-deep .dlg-table {
+				height: 290px !important;
+			}
 
 			.dlg-body-right-top {
 				flex: none;
