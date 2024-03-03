@@ -15,7 +15,7 @@
 				<div class="bar-chart" ref="bar"></div>
 			</div>
 			<div class="dlg-body-right">
-				<AlarmTable type="room" :id="cardInfo.room_id" tableType="toilet"></AlarmTable>
+				<AlarmTable type="room" :id="cardInfo.device_id" tableType="toilet"></AlarmTable>
 			</div>
 		</section>
 	</el-dialog>
@@ -114,6 +114,8 @@ export default {
 
 		//处理窗体打开
 		handleDlgOpen() {
+			const chartDom = this.$refs.bar
+			chartDom.innerHTML = ''
 			this.$nextTick(() => {
 				fetchRoomAlarmList({
 					device_id: this.device_id,

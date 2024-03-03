@@ -1,14 +1,25 @@
 <template>
 	<div class="card-wrap" :class="alertLevelClass">
-		<img class="card-logo" :src="alertImgPath" />
-		<span>{{ cardInfo.data.room_name }}</span>
-		<span>{{ cardInfo.data.alarm_msg }}</span>
-		<div class="card-num" v-if="alertCount !== 0 && ifAlert">{{ alertCount }}s</div>
+		<div class="card-wrap-left" @click="openDlg">
+			<img class="card-logo" :src="alertImgPath" />
+			<span>{{ cardInfo.device_name }}</span>
+			<span>{{ cardInfo.status }}</span>
+		</div>
+		<el-button
+			type="danger"
+			class="card-num"
+			v-if="alertCount !== 0 && cardInfo.alertFlag"
+			@click="handleSolveAlarm"
+		>
+			{{ alertCount }}s
+		</el-button>
 	</div>
 </template>
 
 <script>
 import { getAlertLevelImg } from '@/api/dict'
+
+import { mapActions } from 'vuex'
 
 export default {
 	name: 'SecurityCenterAreaCard',
@@ -42,20 +53,29 @@ export default {
 			deep: true,
 			immediate: true,
 			handler(newValue) {
-				let { alarm_msg } = newValue.data
-				const { imgPath, alertClass } = getAlertLevelImg(alarm_msg)
+				console.log('newValue', newValue)
+				let { status, alertFlag } = newValue
+				if (alertFlag) {
+					const { imgPath, alertClass } = getAlertLevelImg(status)
 
-				this.alertLevelClass = alertClass
-				this.alertImgPath = imgPath
+					this.alertLevelClass = alertClass
+					this.alertImgPath = imgPath
+
+					this.startCountdown(30)
+				} else {
+					const { imgPath, alertClass } = getAlertLevelImg('在线')
+					this.alertLevelClass = alertClass
+					this.alertImgPath = imgPath
+				}
 			},
 		},
 	},
 
-	mounted() {
-		this.startCountdown(18)
-	},
+	mounted() {},
 
 	methods: {
+		...mapActions('data', ['resolveToiletAlarm']),
+
 		//开始告警计时
 		startCountdown(duration, callback) {
 			this.alertCount = duration
@@ -69,6 +89,17 @@ export default {
 				}
 			}, 1000)
 		},
+
+		openDlg() {
+			this.$emit('openAreaDlg', this.cardInfo)
+		},
+
+		handleSolveAlarm() {
+			this.alertCount = 0
+			this.resolveToiletAlarm({
+				id: this.cardInfo.room_id,
+			})
+		},
 	},
 }
 </script>
@@ -80,18 +111,28 @@ export default {
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: center;
-	font-size: 18px;
+	font-size: 16px;
 	font-family: PingFang SC;
 	font-weight: bold;
 	color: #333333;
 	width: 360px;
 	height: 60px;
 	background: #ecffee;
-	border-radius: 5px;
+	border-radius: 10px;
 	border: 1px solid #c5cec6;
-	padding: 6px 16px;
+	padding: 0;
 	margin: 8px 0;
 	cursor: pointer;
+	overflow: hidden;
+
+	.card-wrap-left {
+		height: 100%;
+		width: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 0 18px;
+	}
 
 	&:first-child {
 		margin-top: 0;
@@ -101,6 +142,16 @@ export default {
 		width: 38px;
 		height: 38px;
 		border-radius: 50%;
+	}
+
+	.card-num {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		width: 60px;
+		height: 60px;
+		background-color: #ff3b30;
+		color: #fff;
 	}
 }
 </style>

@@ -20,7 +20,7 @@
 			<h2 class="panel-title">区域</h2>
 			<el-scrollbar class="scroll-wrap" style="height: 100%">
 				<!-- <div class="panel-right-wrap"> -->
-				<transition-group class="panel-right-wrap" name="list-complete" tag="div">
+				<!-- <transition-group class="panel-right-wrap" name="list-complete" tag="div">
 					<AreaCard
 						v-for="(item, index) in roomAlertData"
 						class="list-complete-item"
@@ -29,14 +29,14 @@
 						:key="index"
 						@click.native="openAreaDlg(item)"
 					></AreaCard>
-				</transition-group>
+				</transition-group> -->
 				<!-- </div> -->
 				<div class="panel-right-wrap">
 					<AreaCard
-						v-for="(item, index) in areaData"
+						v-for="(item, index) in filteredToiletData"
 						:cardInfo="item"
 						:key="index"
-						@click.native="openAreaDlg(item)"
+						@openAreaDlg="openAreaDlg"
 					></AreaCard>
 				</div>
 			</el-scrollbar>
@@ -88,11 +88,11 @@ export default {
 	},
 
 	computed: {
-		...mapGetters(['roomData', 'classifiedData', 'roomAlertData', 'toiletData']),
+		...mapGetters(['roomData', 'classifiedData', 'roomAlertData', 'toiletData', 'filteredToiletData']),
 
 		areaData() {
-			console.log('toiletData', this.toiletData)
-			return this.toiletData.map((item) => {
+			console.log('filteredToiletData', this.filteredToiletData)
+			return this.filteredToiletData.map((item) => {
 				let obj = {
 					data: {},
 				}
@@ -102,6 +102,7 @@ export default {
 					device_id: item.device_id,
 					only_room_id: item.only_room_id,
 					room_id: item.room_id,
+					alertFlag: item.alertFlag,
 				})
 				return obj
 			})
@@ -139,7 +140,7 @@ export default {
 
 		//触发语音告警
 		handleAudioAlarm(payload) {
-			const { warn_text, bed_id } = payload
+			const { warn_text, bed_id, alert_text } = payload
 			let alarmType = ''
 			switch (warn_text.trim()) {
 				case '呼吸暂停':
@@ -156,19 +157,19 @@ export default {
 					break
 			}
 			const audioUrl = getAudioUrl(alarmType)
-			this.doTalk(audioUrl, bed_id)
+			this.doTalk(alert_text, bed_id)
 			this.openAlarmNotification(payload)
 		},
 
 		//开启语音播报
-		async doTalk(url, bed_id) {
-			var text = '南岗畅园2-101发生老人呼吸异常事件，请及时处理'
+		async doTalk(alert_text, bed_id) {
+			var text = alert_text
 			var utterance = new SpeechSynthesisUtterance()
 			utterance.text = text
 			utterance.rate = 0.8 // 设置语速为0.8
 			utterance.pitch = 1.2 // 设置音调为1.2
 			utterance.volume = 0.5 // 设置音量为0.5
-
+			speechSynthesis.speak(utterance)
 			let count = 1
 			let loopHandle = setInterval(() => {
 				speechSynthesis.speak(utterance)

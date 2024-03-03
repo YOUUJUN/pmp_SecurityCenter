@@ -80,7 +80,8 @@ const actions = {
 	//处理区域告警事件
 	handleRoomAlarmIot({ state, commit, dispatch }, payload) {
 		console.log('payload', payload)
-		commit('SET_ROOM_ALERT_DATA', payload)
+		const { date, data } = payload
+		dispatch('setToiletAlarmData', { data }, { root: true })
 	},
 }
 

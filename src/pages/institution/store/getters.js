@@ -100,85 +100,85 @@ const getters = {
 	},
 
 	/*---菜单过滤后的卫生间数据---*/
-	// filteredToiletData: (state, getters) => {
-	// 	const toiletData = getters.toiletData
-	// 	const displayFilters = getters.displayFilters
-	// 	let result = []
-	// 	let levelQueue = displayFilters
-	// 		.map((item) => {
-	// 			return item.level
-	// 		})
-	// 		.sort((a, b) => a - b)
-	// 	console.log('levelQueue', levelQueue)
-	// 	let firstLevel = levelQueue[0]
-	// 	let filterArr = []
-	// 	switch (firstLevel) {
-	// 		case 1:
-	// 			filterArr = displayFilters.filter((item) => {
-	// 				if (item.level === 1) {
-	// 					return item
-	// 				}
-	// 			})
+	filteredToiletData: (state, getters) => {
+		const toiletData = getters.toiletData
+		const displayFilters = getters.displayFilters
+		let result = []
+		let levelQueue = displayFilters
+			.map((item) => {
+				return item.level
+			})
+			.sort((a, b) => a - b)
+		console.log('levelQueue', levelQueue)
+		let firstLevel = levelQueue[0]
+		let filterArr = []
+		switch (firstLevel) {
+			case 1:
+				filterArr = displayFilters.filter((item) => {
+					if (item.level === 1) {
+						return item
+					}
+				})
 
-	// 			filterArr.forEach((item) => {
-	// 				let cache = roomData.filter((data) => item.id === data.only_inst_id ?? item)
-	// 				result = result.concat(cache)
-	// 			})
-	// 			break
-	// 		case 2:
-	// 			filterArr = displayFilters.filter((item) => {
-	// 				if (item.level === 2) {
-	// 					return item
-	// 				}
-	// 			})
+				filterArr.forEach((item) => {
+					let cache = toiletData.filter((data) => item.id === data.only_inst_id ?? item)
+					result = result.concat(cache)
+				})
+				break
+			case 2:
+				filterArr = displayFilters.filter((item) => {
+					if (item.level === 2) {
+						return item
+					}
+				})
 
-	// 			filterArr.forEach((item) => {
-	// 				let cache = roomData.filter((data) => item.id === data.only_build_id ?? item)
-	// 				result = result.concat(cache)
-	// 			})
-	// 			break
-	// 		case 3:
-	// 			filterArr = displayFilters.filter((item) => {
-	// 				if (item.level === 3) {
-	// 					return item
-	// 				}
-	// 			})
+				filterArr.forEach((item) => {
+					let cache = toiletData.filter((data) => item.id === data.only_build_id ?? item)
+					result = result.concat(cache)
+				})
+				break
+			case 3:
+				filterArr = displayFilters.filter((item) => {
+					if (item.level === 3) {
+						return item
+					}
+				})
 
-	// 			filterArr.forEach((item) => {
-	// 				let cache = roomData.filter((data) => item.id == data.only_floor_id ?? item)
-	// 				result = result.concat(cache)
-	// 			})
-	// 			break
-	// 		case 4:
-	// 			filterArr = displayFilters.filter((item) => {
-	// 				if (item.level === 4) {
-	// 					return item
-	// 				}
-	// 			})
+				filterArr.forEach((item) => {
+					let cache = toiletData.filter((data) => item.id == data.only_floor_id ?? item)
+					result = result.concat(cache)
+				})
+				break
+			case 4:
+				filterArr = displayFilters.filter((item) => {
+					if (item.level === 4) {
+						return item
+					}
+				})
 
-	// 			filterArr.forEach((item) => {
-	// 				let cache = roomData.filter((data) => item.id == data.only_room_id ?? item)
-	// 				result = result.concat(cache)
-	// 			})
-	// 			break
-	// 		case 5:
-	// 			filterArr = displayFilters.filter((item) => {
-	// 				if (item.level === 5) {
-	// 					return item
-	// 				}
-	// 			})
+				filterArr.forEach((item) => {
+					let cache = toiletData.filter((data) => item.id == data.only_room_id ?? item)
+					result = result.concat(cache)
+				})
+				break
+			case 5:
+				filterArr = displayFilters.filter((item) => {
+					if (item.level === 5) {
+						return item
+					}
+				})
 
-	// 			filterArr.forEach((item) => {
-	// 				let cache = roomData.filter((data) => item.id == data.only_bed_id ?? item)
-	// 				result = result.concat(cache)
-	// 			})
-	// 			break
-	// 	}
+				filterArr.forEach((item) => {
+					let cache = toiletData.filter((data) => item.id == data.only_bed_id ?? item)
+					result = result.concat(cache)
+				})
+				break
+		}
 
-	// 	console.log('result-->', result)
+		console.log('result-->', result)
 
-	// 	return result
-	// },
+		return result
+	},
 
 	/*---分类菜单过滤后的数据---*/
 	classifiedData: (state, getters) => {

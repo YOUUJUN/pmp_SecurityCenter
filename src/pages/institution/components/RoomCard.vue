@@ -1,6 +1,27 @@
 <template>
 	<div class="card-wrap card-normal" :class="[alertClass, emptyClass, offlineClass]">
-		<div class="card-badge" v-show="roomData.warn_count > 0">{{ roomData.warn_count }}</div>
+		<el-popover popper-class="alarm-popover" placement="right" trigger="click" v-model="visible">
+			<alert-process-dlg
+				:id="roomData.device_id"
+				:roomData="roomData"
+				:alarmData="alarmList"
+				:visible.sync="visible"
+			></alert-process-dlg>
+
+			<el-button
+				v-show="roomData.warn_count > 0"
+				slot="reference"
+				@click="openAlertProcessDlg()"
+				class="card-badge"
+				type="danger"
+				circle
+				size="mini"
+				trigger="manual"
+			>
+				{{ roomData.warn_count }}
+			</el-button>
+		</el-popover>
+		<!-- <div class="card-badge" v-show="roomData.warn_count > 0">{{ roomData.warn_count }}</div> -->
 		<div class="card-top">
 			<img
 				class="card-avatar"
@@ -63,8 +84,11 @@ import { mapActions } from 'vuex'
 
 import ElderInfoDlg from './ElderInfoDlg.vue'
 import ResumeDlg from './ResumeDlg.vue'
+import AlertProcessDlg from '@/components/Notify/AlertProcessDlg.vue'
 
 import { getAlertLevelClass } from '@/api/dict'
+import { fetchAlarmList } from '@/api/security'
+import moment from 'moment'
 
 export default {
 	name: 'SecurityCenterRoomCard',
@@ -81,6 +105,7 @@ export default {
 	components: {
 		ElderInfoDlg,
 		ResumeDlg,
+		AlertProcessDlg,
 	},
 
 	data() {
@@ -101,6 +126,14 @@ export default {
 
 			//告警计时器
 			alertTimer: null,
+
+			//弹窗控制
+			popOverVisible: false,
+
+			visible: false,
+
+			//报警列表
+			alarmList: [],
 		}
 	},
 
@@ -176,7 +209,7 @@ export default {
 		//启动卡片告警
 		setCardAlarm() {
 			console.log('roomData', this.roomData)
-			const { bed_id, warn_text, room_name, bed_room } = this.roomData
+			const { bed_id, warn_text, room_name, bed_room, inst_name, build_name, floor_name } = this.roomData
 			if (this.alertTimer) {
 				clearInterval(this.alertTimer)
 			}
@@ -190,6 +223,7 @@ export default {
 				warn_text,
 				bed_id,
 				bed_name: `${room_name}-${bed_room}`,
+				alert_text: `${inst_name}${build_name}${floor_name}${room_name}${bed_room}发生${warn_text}事件，请及时处理！`,
 			})
 		},
 
@@ -205,6 +239,33 @@ export default {
 					}
 				}
 			}, 1000)
+		},
+
+		// 打开处理告警面板
+		openAlertProcessDlg() {
+			console.log('roomData', this.roomData)
+			fetchAlarmList({
+				type: 'inst',
+				id: this.roomData.device_id,
+				limit: 9999,
+				// date: moment('2024-01-11').format('YYYY-MM-DD'),
+				page: 1,
+			})
+				.then((res) => {
+					console.log('res', res)
+					const { result, alarm_datas, count } = res.data
+					if (result === 'success') {
+						this.alarmList = alarm_datas
+						if (this.alarmList.length > 0) {
+							this.visible = true
+						} else {
+							this.$message.warning('暂无需要处理的告警')
+						}
+					}
+				})
+				.catch((err) => {
+					console.error('err', err)
+				})
 		},
 	},
 }
@@ -223,23 +284,23 @@ export default {
 	padding: 16px 0;
 	margin-top: 9px;
 
-	.card-badge {
-		position: absolute;
-		top: 0;
-		right: 10px;
-		transform: translateY(-50%) translateX(100%);
-		font-size: 10px;
-		color: #fff;
-		background-color: #f56c6c;
-		display: flex;
-		width: 2rem;
-		height: 2rem;
-		align-items: center;
-		justify-content: center;
-		border-radius: 50%;
-		cursor: pointer;
-		user-select: none;
-	}
+	// .card-badge {
+	// 	position: absolute;
+	// 	top: 0;
+	// 	right: 10px;
+	// 	transform: translateY(-50%) translateX(100%);
+	// 	font-size: 10px;
+	// 	color: #fff;
+	// 	background-color: #f56c6c;
+	// 	display: flex;
+	// 	width: 2rem;
+	// 	height: 2rem;
+	// 	align-items: center;
+	// 	justify-content: center;
+	// 	border-radius: 50%;
+	// 	cursor: pointer;
+	// 	user-select: none;
+	// }
 
 	.card-top {
 		flex: none;
@@ -322,6 +383,18 @@ export default {
 			font-size: 14px;
 		}
 	}
+}
+
+.card-badge {
+	position: absolute;
+	top: 0;
+	right: 10px;
+	transform: translateY(-50%) translateX(100%);
+	display: flex;
+	width: 2rem;
+	height: 2rem;
+	align-items: center;
+	justify-content: center;
 }
 
 .card-normal {

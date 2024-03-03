@@ -46,6 +46,9 @@ export function getNotifyClass(msg_text) {
 		case '设备离线':
 			alertClass = 'card-off'
 			break
+		default:
+			alertClass = 'card-alert'
+			break
 	}
 
 	return alertClass

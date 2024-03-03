@@ -60,7 +60,16 @@ const mutations = {
 
 	// 设置所有卫生间区域报警数据
 	SET_ALL_TOILET_DIC(state, payload) {
-		state.allToiletDic = payload
+		state.allToiletDic = payload.map((item) => {
+			let obj = {}
+
+			//添加初始告警信息
+			Object.assign(obj, item, {
+				alertFlag: false,
+			})
+
+			return obj
+		})
 	},
 
 	CHANGE_MENU_CHECKED(state, payload) {
@@ -112,6 +121,46 @@ const mutations = {
 			}, 500)
 		} else {
 			alarmBed.alertFlag = alertFlag
+		}
+	},
+
+	//减少床位告警数量
+	REDUCE_BED_ALARM_QTY(state, payload) {
+		let { id } = payload
+		let rowData = state.allRoomDic.find((data) => data.bed_id === id)
+		console.log('rowData', rowData)
+		rowData.warn_count--
+	},
+
+	//设置卫生间告警状态
+	SET_ALARM_TOILET_DATA(state, payload) {
+		console.log('seting toilet alarm data....', payload)
+		const { alarm_msg, room_id, alarming_date } = payload
+		let alarmToilet = state.allToiletDic.find((item) => {
+			if (room_id === item.room_id) {
+				return item
+			}
+		})
+
+		Object.assign(alarmToilet, {
+			status: alarm_msg,
+			alertFlag: true,
+		})
+		console.log('seting finished....', alarmToilet)
+	},
+
+	//设置卫生间告警状态
+	CHANGE_TOILET_ALERT_STATUS(state, payload) {
+		console.log('setting status...')
+		let { room_id, alertFlag } = payload
+		let alarmToilet = state.allToiletDic.find((data) => data.room_id === room_id)
+		if (alertFlag === true) {
+			setTimeout(() => {
+				alarmToilet.alertFlag = alertFlag
+			}, 500)
+		} else {
+			alarmToilet.alertFlag = alertFlag
+			alarmToilet.status = '在线'
 		}
 	},
 }
@@ -170,6 +219,52 @@ const actions = {
 	resetBedAlarm({ state, commit }, payload) {
 		const { bed_id } = payload
 		commit('CHANGE_BED_ALERT_STATUS', { bed_id, alertFlag: false })
+	},
+
+	//处理床位告警
+	resolveBedAlarm({ state, commit }, payload) {
+		console.log('payload', payload)
+		const { id, warn_qty } = payload
+		return new Promise((resolve, reject) => {
+			try {
+				commit('REDUCE_BED_ALARM_QTY', payload)
+				let obj = {
+					bed_id: id,
+					alertFlag: false,
+				}
+				commit('CHANGE_BED_ALERT_STATUS', obj)
+				resolve()
+			} catch {
+				reject()
+			}
+		})
+	},
+
+	//设置卫生间告警状态
+	setToiletAlarmData: {
+		root: true,
+		handler({ state, commit }, payload) {
+			const { data } = payload
+			commit('SET_ALARM_TOILET_DATA', data)
+		},
+	},
+
+	//处理卫生间告警
+	resolveToiletAlarm({ state, commit }, payload) {
+		console.log('payload', payload)
+		const { id } = payload
+		return new Promise((resolve, reject) => {
+			try {
+				let obj = {
+					room_id: id,
+					alertFlag: false,
+				}
+				commit('CHANGE_TOILET_ALERT_STATUS', obj)
+				resolve()
+			} catch {
+				reject()
+			}
+		})
 	},
 }
 
