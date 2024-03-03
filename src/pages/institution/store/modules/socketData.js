@@ -7,6 +7,12 @@ const state = {
 
 	//区域告警缓存
 	roomAlertCache: [],
+
+	//心电图数据
+	heatRate: 75,
+
+	//呼吸数据
+	breathRate: 75,
 }
 
 const mutations = {
@@ -23,6 +29,11 @@ const mutations = {
 		state.vitalIotDataCache = Object.assign({}, state.vitalIotDataCache, {
 			[elderly_id]: dataCache,
 		})
+	},
+
+	SET_HEAT_DATA(state, payload) {
+		const { heart } = payload
+		state.heatRate = heart
 	},
 
 	//添加区域告警缓存
@@ -69,6 +80,7 @@ const actions = {
 		const { date, data } = payload
 		const { elderly_id, elderly_name, breathing, heart } = data
 		commit('SET_VITAL_IOT_DATA', { elderly_id, elderly_name, breathing, heart, date })
+		commit('SET_HEAT_DATA', { heart })
 	},
 
 	//处理床位告警事件
@@ -82,6 +94,11 @@ const actions = {
 		console.log('payload', payload)
 		const { date, data } = payload
 		dispatch('setToiletAlarmData', { data }, { root: true })
+	},
+
+	//重置心跳数据
+	resetHeartRate({ state, commit, dispatch }, payload) {
+		commit('SET_HEAT_DATA', { heart: 75 })
 	},
 }
 

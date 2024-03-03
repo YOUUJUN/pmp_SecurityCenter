@@ -85,26 +85,23 @@ export default {
 		}
 	},
 
-	watch: {
-		visible: {
-			handler(newValue) {
-				if (newValue) {
-					// this.drawBarChart()
-				}
-			},
-		},
-	},
+	// watch: {
+	// 	visible: {
+	// 		handler(newValue) {
+	// 			if (newValue) {
+	// 			}
+	// 		},
+	// 	},
+	// },
 
 	mounted() {},
 
 	methods: {
 		//初始化数据
 		setData(payload) {
-			console.log('payload', payload)
-			const { data } = payload
-			const { device_id, alarm_msg, room_name } = data
-			this.areaName = `${room_name} - 卫生间`
-			this.statusText = alarm_msg
+			const { device_id, status, device_name } = payload
+			this.areaName = `${device_name} - 卫生间`
+			this.statusText = status
 			this.device_id = device_id
 		},
 
@@ -166,225 +163,28 @@ export default {
 						const { result, data } = response
 						if (result === 'success') {
 							const { toilet_status, toilet_warn, toilet_event } = data
-							const warnArr = toilet_event.map((item) => {
-								let obj = {}
-								const start_time = this.formatTime(item.start_time)
-								const end_time = this.formatTime(item.end_time)
-								const diff = this.calculateTimeDifference(item.start_time, item.end_time)
-								Object.assign(obj, {
-									time: this.formatTime(item.start_time),
-									start: this.extractMinutes(start_time),
-									end: this.extractMinutes(start_time) + diff,
-									flag: 1,
-								})
+							// const warnArr = toilet_event.map((item) => {
+							// 	let obj = {}
+							// 	const start_time = this.formatTime(item.start_time)
+							// 	const end_time = this.formatTime(item.end_time)
+							// 	const diff = this.calculateTimeDifference(item.start_time, item.end_time)
+							// 	Object.assign(obj, {
+							// 		time: this.formatTime(item.start_time),
+							// 		start: this.extractMinutes(start_time),
+							// 		end: this.extractMinutes(start_time) + diff,
+							// 		flag: 1,
+							// 	})
 
-								return obj
-							}, [])
+							// 	return obj
+							// }, [])
 
-							console.log('warnArr', warnArr)
+							// console.log('warnArr', warnArr)
 
 							this.drawChart()
 						}
 					})
 					.catch((err) => {})
 			})
-		},
-
-		//绘制矩形
-		drawBarChart() {
-			console.log('this.$refs.bar', this.$refs.bar)
-			const chartDom = this.$refs.bar
-			const myChart = echarts.init(chartDom)
-
-			// prettier-ignore
-			let dataAxis = ['6:00', '6:10', '6:20', '6:30', '6:40', '6:50', '7:00', '7:10', '7:20', '7:30', '7:40', '7:50', '8:00', '7:00', '7:10', '7:20', '7:30', '7:40', '7:50', '7:00', '7:10', '7:20', '7:30', '7:40', '7:50', '7:00', '7:10', '7:20', '7:30', '7:40', '7:50', '7:00', '7:10', '7:20', '7:30', '7:40', '7:50', '7:00', '7:10', '7:20', '7:30', '7:40', '7:50'];
-			// prettier-ignore
-			let data = [0,0,0,0,0,0,0,0,0,0,0,0,0];
-			let data2 = [1, 1, 1, 1, 1, 1]
-			let data3 = [4, 5, 1, 1, 1, 1]
-			let yData = [0, 5, 10]
-			let option = {
-				xAxis: {
-					data: dataAxis,
-					axisLabel: {
-						inside: false,
-						// color: '#fff',
-					},
-					axisTick: {
-						alignWithLabel: true,
-					},
-					// axisTick: {
-					// 	show: false,
-					// },
-					// axisLine: {
-					// 	show: false,
-					// },
-					z: 10,
-				},
-				yAxis: {
-					data: yData,
-					type: 'value',
-					min: 0,
-					max: 10,
-					axisLine: {
-						show: false,
-					},
-					axisTick: {
-						show: false,
-					},
-					axisLabel: {
-						color: '#999',
-					},
-				},
-				dataZoom: [
-					{
-						type: 'inside',
-					},
-				],
-				series: [
-					{
-						type: 'bar',
-						stack: 'Ad',
-						showBackground: true,
-						backgroundStyle: {
-							borderRadius: 10,
-						},
-						itemStyle: {
-							color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-								{ offset: 0, color: '#83bff6' },
-								{ offset: 0.5, color: '#188df0' },
-								{ offset: 1, color: '#188df0' },
-							]),
-						},
-						emphasis: {
-							itemStyle: {
-								color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-									{ offset: 0, color: '#2378f7' },
-									{ offset: 0.7, color: '#2378f7' },
-									{ offset: 1, color: '#83bff6' },
-								]),
-							},
-						},
-						data: data,
-					},
-
-					{
-						type: 'bar',
-						showBackground: true,
-						stack: 'Ad',
-						itemStyle: {
-							color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-								{ offset: 0, color: '#83bff6' },
-								{ offset: 0.5, color: '#188df0' },
-								{ offset: 1, color: '#188df0' },
-							]),
-						},
-						emphasis: {
-							itemStyle: {
-								color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-									{ offset: 0, color: '#2378f7' },
-									{ offset: 0.7, color: '#2378f7' },
-									{ offset: 1, color: '#83bff6' },
-								]),
-							},
-						},
-						data: data2,
-					},
-
-					{
-						type: 'bar',
-						showBackground: true,
-						stack: 'Ad',
-						itemStyle: {
-							color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-								{ offset: 0, color: '#83bff6' },
-								{ offset: 0.5, color: '#188df0' },
-								{ offset: 1, color: '#188df0' },
-							]),
-						},
-						emphasis: {
-							itemStyle: {
-								color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-									{ offset: 0, color: '#2378f7' },
-									{ offset: 0.7, color: '#2378f7' },
-									{ offset: 1, color: '#83bff6' },
-								]),
-							},
-						},
-						data: data3,
-					},
-				],
-			}
-
-			// 假设你已经引入了 ECharts 库，并创建了一个容器 div，id 为 'chart-container'
-
-			// 数据示例
-			const dataV = [
-				{ time: '2023-01', range: [10, 20] },
-				{ time: '2023-02', range: [15, 25] },
-				{ time: '2023-03', range: [18, 30] },
-				// 更多数据...
-			]
-
-			// 转换数据
-			const seriesData = dataV.map((item) => ({
-				name: item.time,
-				value: [item.time, ...item.range],
-			}))
-
-			// 自定义绘制区间条形图
-			option = {
-				xAxis: {
-					type: 'time',
-				},
-				yAxis: {},
-				series: [
-					{
-						type: 'custom',
-						renderItem: function (params, api) {
-							const yValue = api.value(2)
-							const start = api.coord([api.value(0), yValue[0]])
-							const end = api.coord([api.value(0), yValue[1]])
-							const height = api.size([0, yValue[1] - yValue[0]])[1]
-
-							const rectShape = echarts.graphic.clipRectByRect(
-								{
-									x: start[0],
-									y: start[1],
-									width: 20, // 设置条形图宽度
-									height: height,
-								},
-								{
-									x: start[0],
-									y: 0,
-									width: end[0] - start[0],
-									height: myChart.getHeight(),
-								},
-							)
-
-							return {
-								type: 'rect',
-								shape: rectShape,
-								style: api.style(),
-							}
-						},
-						encode: {
-							x: 'time',
-							y: [1, 2], // 区间范围的数据索引
-						},
-						data: seriesData,
-					},
-				],
-			}
-
-			// 使用刚指定的配置项和数据显示图表。
-			myChart.setOption(option)
-
-			myChart.on('click', function (params) {
-				console.log('params', params)
-			})
-
-			option && myChart.setOption(option)
 		},
 
 		drawChart(dataArr = []) {
@@ -421,7 +221,16 @@ export default {
 			chart.options({
 				axis: {
 					x: {
-						labelAutoHide: true,
+						// labelAutoHide: true,
+						labelFilter: function (datum, index, data) {
+							console.log('datum', datum)
+							let arr = datum.split(':')
+							if (arr[1] === '00') {
+								return true
+							} else {
+								return false
+							}
+						},
 					},
 					y: {
 						min: 0,

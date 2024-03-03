@@ -5,12 +5,21 @@
 	</div>
 </template>
 <script>
+import { mapState, mapActions } from 'vuex'
+
 export default {
 	data() {
 		return {
 			xValue: 0,
 			context: null,
+			ifOpen: false,
+
+			x: 2,
 		}
+	},
+
+	computed: {
+		...mapState('socketData', ['heatRate']),
 	},
 
 	mounted() {
@@ -25,6 +34,8 @@ export default {
 	},
 
 	methods: {
+		...mapActions('socketData', ['resetHeartRate']),
+
 		drawSmallGrid(canvas) {
 			var context = canvas.getContext('2d')
 			context.strokeStyle = '#fff'
