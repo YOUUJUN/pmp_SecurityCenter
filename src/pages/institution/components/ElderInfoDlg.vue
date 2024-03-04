@@ -135,8 +135,8 @@ export default {
 
 					// this.heartChart && this.updateHeartChart()
 					// this.breathChart && this.updateBreathChart()
-					this.$refs.heartLine.drawLine(heart)
-					this.$refs.breathLine.drawLine(breathing)
+					// this.$refs.heartLine.drawLine(heart)
+					// this.$refs.breathLine.drawLine(breathing)
 				}
 			},
 		},

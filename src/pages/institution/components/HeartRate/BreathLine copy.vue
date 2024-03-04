@@ -5,45 +5,25 @@
 	</div>
 </template>
 <script>
-import { mapState, mapActions } from 'vuex'
-
 export default {
 	data() {
 		return {
 			xValue: 0,
 			context: null,
-			ifOpen: false,
-
-			valueRate: 1,
 		}
-	},
-
-	computed: {
-		...mapState('socketData', ['heatRate']),
-	},
-
-	watch: {
-		heatRate: {
-			handler(newValue) {
-				this.changeOpen(newValue)
-			},
-		},
 	},
 
 	mounted() {
 		var canvas = this.$refs.ecg
 		var canvas2 = this.$refs.line
 		this.context = canvas2.getContext('2d')
-
 		this.drawSmallGrid(canvas)
 		this.drawMediumGrid(canvas)
 		this.drawBigGrid(canvas)
-		this.drawLine(canvas2)
+		// this.drawLine2(canvas2)
 	},
 
 	methods: {
-		...mapActions('socketData', ['resetHeartRate']),
-
 		drawSmallGrid(canvas) {
 			var context = canvas.getContext('2d')
 			context.strokeStyle = '#fff'
@@ -102,74 +82,52 @@ export default {
 			return
 		},
 
-		drawLine(canvas) {
+		drawLineInit(canvas) {
 			var ctx = canvas.getContext('2d')
-			ctx.strokeStyle = '#ef0a0a'
-			ctx.lineWidth = 1
-			let x = 2
-			setInterval(async () => {
-				// ctx.clearRect(x * 6, 0, 25, 750);
-				// x = x + 1;
-				// console.log('(Math.random() * 10 - 5) * 10', (Math.random() * 10 - 5) * 10)
-				// let num = (x % 10 === 0) || (x % 10 === 1) ? (Math.random() * 10 - 5) * 10 + 50 : 50;
-				// console.log('num', num)
-				// ctx.lineTo(x * 6, num);
-				// ctx.stroke();
-
-				if (this.ifOpen === false) {
-					ctx.clearRect(x * 6, 0, 25, 750)
-					x = x + 1
-					ctx.lineTo(x * 6, 76)
-					ctx.stroke()
-				} else {
-					ctx.clearRect(x * 6, 0, 25, 750)
-					x = x + 1
-					ctx.lineTo(x * 6, 76)
-					ctx.stroke()
-
-					x = x + 1
-					ctx.lineTo(x * 6, 76 + 76 * this.valueRate)
-					ctx.stroke()
-
-					x = x + 1
-					ctx.lineTo(x * 6, 76 - 76 * this.valueRate)
-					ctx.stroke()
-
-					x = x + 1
-					ctx.lineTo(x * 6, 76)
-					ctx.stroke()
-
-					this.ifOpen = false
-					this.valueRate = 1
-				}
-
-				if (x > 750 / 6) {
-					x = 2
-					ctx.beginPath()
-				}
-			}, 60)
+			ctx.strokeStyle = '#E70014' // 设置呼吸波的颜色为绿色
+			ctx.strokeWidth = 1
 			ctx.stroke()
 			ctx.closePath()
 		},
 
-		changeOpen(heartRate) {
-			this.valueRate = this.calculateHeartRatePercentage(heartRate)
-			console.log('valueRate', this.valueRate)
-			this.ifOpen = true
+		drawLine(value) {
+			var ctx = this.context
+			ctx.strokeStyle = '#E70014' // 设置呼吸波的颜色为绿色
+			ctx.strokeWidth = 1
+			ctx.clearRect(this.xValue * 6, 0, 25, 750)
+			this.xValue = this.xValue + 1
+			let cutValue = value - 16
+			console.log('cutValue', cutValue)
+			let num = 76
+			num = Math.sin(cutValue / 5) * 10 + 76
+
+			ctx.lineTo(this.xValue * 6, num)
+			ctx.stroke()
+			if (this.xValue > 750 / 6) {
+				this.xValue = 0
+				ctx.beginPath()
+			}
 		},
 
-		calculateHeartRatePercentage(heartRate) {
-			const lowerLimit = 60
-			const upperLimit = 100
-
-			if (heartRate < lowerLimit) {
-				return 0
-			} else if (heartRate > upperLimit) {
-				return 1
-			} else {
-				const percentage = (heartRate - lowerLimit) / (upperLimit - lowerLimit)
-				return percentage
-			}
+		drawLine2(canvas) {
+			var ctx = canvas.getContext('2d')
+			ctx.strokeStyle = '#E70014' // 设置呼吸波的颜色为绿色
+			ctx.strokeWidth = 1
+			let x = 2
+			setInterval(() => {
+				ctx.clearRect(x * 6, 0, 25, 750)
+				x = x + 1
+				console.log('Math.sin(x / 5)', Math.sin(x / 5) * 10)
+				let num = Math.sin(x / 5) * 10 + 76 // 呼吸波的振幅为100，频率为5
+				ctx.lineTo(x * 6, num)
+				ctx.stroke()
+				if (x > 750 / 6) {
+					x = 2
+					ctx.beginPath()
+				}
+			}, 30) // 设置时间间隔为30ms
+			ctx.stroke()
+			ctx.closePath()
 		},
 	},
 }
