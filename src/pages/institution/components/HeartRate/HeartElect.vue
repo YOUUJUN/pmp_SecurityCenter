@@ -24,8 +24,9 @@ export default {
 
 	watch: {
 		heatRate: {
+			deep: true,
 			handler(newValue) {
-				this.changeOpen(newValue)
+				this.changeOpen(newValue.value)
 			},
 		},
 	},
@@ -39,10 +40,23 @@ export default {
 		this.drawMediumGrid(canvas)
 		this.drawBigGrid(canvas)
 		this.drawLine(canvas2)
+		this.setLoop()
 	},
 
 	methods: {
 		...mapActions('socketData', ['resetHeartRate']),
+
+		setLoop() {
+			setTimeout(() => {
+				this.ifOpen = true
+				this.valueRate = 0.4
+				setTimeout(() => {
+					this.ifOpen = false
+					this.valueRate = 1
+					this.setLoop()
+				}, 500)
+			}, 500)
+		},
 
 		drawSmallGrid(canvas) {
 			var context = canvas.getContext('2d')
@@ -147,7 +161,7 @@ export default {
 					x = 2
 					ctx.beginPath()
 				}
-			}, 60)
+			}, 50)
 			ctx.stroke()
 			ctx.closePath()
 		},

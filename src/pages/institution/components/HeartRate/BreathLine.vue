@@ -19,13 +19,14 @@ export default {
 	},
 
 	computed: {
-		...mapState('socketData', ['heatRate']),
+		...mapState('socketData', ['breathRate']),
 	},
 
 	watch: {
-		heatRate: {
+		breathRate: {
+			deep: true,
 			handler(newValue) {
-				this.changeOpen(newValue)
+				this.changeOpen(newValue.value)
 			},
 		},
 	},
@@ -136,7 +137,7 @@ export default {
 				ctx.lineTo(points[points.length - 1].x, points[points.length - 1].y)
 				ctx.stroke()
 				ctx.closePath()
-			}, 60) // 设置时间间隔为30ms
+			}, 50) // 设置时间间隔为30ms
 		},
 
 		drawLine2(canvas) {
@@ -162,6 +163,7 @@ export default {
 		},
 
 		changeOpen(breathRate) {
+			console.log('breathRate111', breathRate)
 			this.valueRate = breathRate
 			// this.valueRate = this.calculateRespirationRatePercentage(breathRate)
 			console.log('valueRate1', this.valueRate)

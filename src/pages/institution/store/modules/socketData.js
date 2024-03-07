@@ -9,10 +9,16 @@ const state = {
 	roomAlertCache: [],
 
 	//心电图数据
-	heatRate: 75,
+	heatRate: {
+		value: 75,
+		count: 1,
+	},
 
 	//呼吸数据
-	breathRate: 75,
+	breathRate: {
+		value: 75,
+		count: 1,
+	},
 }
 
 const mutations = {
@@ -33,7 +39,14 @@ const mutations = {
 
 	SET_HEAT_DATA(state, payload) {
 		const { heart } = payload
-		state.heatRate = heart
+		state.heatRate.value = heart
+		state.heatRate.count += 1
+	},
+
+	SET_BREATH_DATA(state, payload) {
+		const { breathing } = payload
+		state.breathRate.value = breathing
+		state.breathRate.count += 1
 	},
 
 	//添加区域告警缓存
@@ -81,6 +94,7 @@ const actions = {
 		const { elderly_id, elderly_name, breathing, heart } = data
 		commit('SET_VITAL_IOT_DATA', { elderly_id, elderly_name, breathing, heart, date })
 		commit('SET_HEAT_DATA', { heart })
+		commit('SET_BREATH_DATA', { breathing })
 	},
 
 	//处理床位告警事件
