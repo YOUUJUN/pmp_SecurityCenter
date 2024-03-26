@@ -82,6 +82,12 @@ export default {
 
 			//图表
 			chart: null,
+
+			//处理后的告警时间信息
+			processedToiletData: [],
+
+			//告警详情信息
+			toiletEvent: [],
 		}
 	},
 
@@ -112,75 +118,87 @@ export default {
 		//处理窗体打开
 		handleDlgOpen() {
 			const chartDom = this.$refs.bar
-			chartDom.innerHTML = ''
+			const canvas = chartDom.querySelector('canvas')
+			canvas && chartDom.removeChild(canvas)
 			this.$nextTick(() => {
 				fetchRoomAlarmList({
 					device_id: this.device_id,
 				})
 					.then((res) => {
-						console.log('res', res)
-						const response = {
-							result: 'success',
-							message: '数据处理成功!',
-							data: {
-								toilet_status: '无人',
-								toilet_warn: [
-									{
-										id: 64,
-										alarm_time: '2023-08-31 01:28:01',
-										alarm_type: '跌倒告警',
-										alarm_text: '跌倒告警',
-									},
-									{
-										id: 65,
-										alarm_time: '2023-08-31 01:29:24',
-										alarm_type: '跌倒告警',
-										alarm_text: '跌倒告警',
-									},
-								],
-								toilet_event: [
-									{
-										id: 75,
-										name: '有人',
-										start_time: '2023-08-31 01:28:24',
-										end_time: '2023-08-31 01:28:39',
-									},
-									{
-										id: 76,
-										name: '离线',
-										start_time: '2023-08-31 01:28:51',
-										end_time: '2023-08-31 01:29:04',
-									},
-									{
-										id: 78,
-										name: '跌倒',
-										start_time: '2023-08-31 01:29:24',
-										end_time: '2023-08-31 01:29:40',
-									},
-								],
-							},
-						}
-						const { result, data } = response
+						console.log('res12', res)
+						const { result, data } = res.data
 						if (result === 'success') {
-							const { toilet_status, toilet_warn, toilet_event } = data
-							// const warnArr = toilet_event.map((item) => {
-							// 	let obj = {}
-							// 	const start_time = this.formatTime(item.start_time)
-							// 	const end_time = this.formatTime(item.end_time)
-							// 	const diff = this.calculateTimeDifference(item.start_time, item.end_time)
-							// 	Object.assign(obj, {
-							// 		time: this.formatTime(item.start_time),
-							// 		start: this.extractMinutes(start_time),
-							// 		end: this.extractMinutes(start_time) + diff,
-							// 		flag: 1,
-							// 	})
+							const { toilet_status, toilet_event, toilet_data } = data
+							console.log('toilet_data', toilet_data)
+							let processedData = toilet_data.reduce((total, item, index) => {
+								let arr = item.data
+								arr = arr.map((data) => {
+									return {
+										...data,
+										id: item.id,
+									}
+								})
+								total = total.concat(arr)
+								return total
+							}, [])
 
-							// 	return obj
-							// }, [])
+							processedData = processedData.map((item) => {
+								const eventInfo = toilet_event.find((data) => data.id === item.id)
+								const { name, start_time, end_time } = eventInfo
+								let startText = start_time.split(' ')[1]
+								let endText = end_time.split(' ')[1]
+								let flag = 0
+								let alertText = ''
+								if (name === '有人') {
+									flag = 1
+									alertText = `<div class="g2-alert">
+										<span>${startText} - ${endText}</span>
+										<span>有人进入</span>
+										</div>`
+								} else if (name === '跌倒') {
+									flag = 2
+									alertText = `<div class="g2-alert">
+										<span>${startText} - ${endText}</span>
+										<span>有人跌倒</span>
+										</div>`
+								}
+								return {
+									id: item.id,
+									flag,
+									alertText,
+									time: item.time,
+									start: Number(item.start),
+									end: Number(item.end),
+								}
+							})
 
-							// console.log('warnArr', warnArr)
+							console.log('processedData', processedData)
 
-							this.drawChart()
+							const warnArr = processedData
+							// .map((item) => {
+							// 	const { name } = item
+							// 	let flag = 0
+							// 	let alertText = ''
+							// 	if (name === '有人') {
+							// 		flag = 1
+							// 		alertText = '有人进入'
+							// 	} else if (name === '跌倒') {
+							// 		flag = 2
+							// 		alertText = '有人跌倒'
+							// 	}
+							// 	return {
+							// 		...item,
+							// 		flag,
+							// 		alertText,
+							// 	}
+							// })
+
+							console.log('warnArr', warnArr)
+
+							this.processedToiletData = warnArr
+							this.toiletEvent = toilet_event
+
+							this.drawChart(warnArr)
 						}
 					})
 					.catch((err) => {})
@@ -223,7 +241,9 @@ export default {
 					x: {
 						// labelAutoHide: true,
 						labelFilter: function (datum, index, data) {
-							console.log('datum', datum)
+							if (!datum) {
+								return false
+							}
 							let arr = datum.split(':')
 							if (arr[1] === '00') {
 								return true
@@ -244,8 +264,10 @@ export default {
 				.style({
 					radius: 6,
 					fill(d) {
-						if (d.flag === 1) {
+						if (d.flag === 2) {
 							return 'red'
+						} else if (d.flag === 1) {
+							return '#E5F6E7'
 						} else {
 							return '#fff'
 						}
@@ -255,16 +277,25 @@ export default {
 				})
 				.data(dataMap)
 				.encode('x', 'time')
+				.scrollbar('x', { value: 1 })
 				.encode('y', ['end', 'start'])
 				.interaction('tooltip', {
 					// render 回调方法返回一个innerHTML 或者 DOM
 					render: (event, { title, items }) => {
 						console.log('event', event)
-						return '发生离线告警'
+						console.log('title', title)
+						const selectData = this.processedToiletData.find((item) => item.time === title)
+						console.log('selectData', selectData)
+						if (selectData) {
+							return selectData.alertText
+						} else {
+							return `<div style="display:none;"></div>`
+						}
+						return ''
 					},
 				})
-				.scrollbar('x', { value: 1 })
 
+			console.log('chart', chart)
 			chart.render()
 			this.chart = chart
 		},
@@ -503,5 +534,22 @@ export default {
 			}
 		}
 	}
+}
+</style>
+
+<style>
+.g2-tooltip {
+	background: unset !important;
+	box-shadow: unset !important;
+	padding: 0 !important;
+}
+
+.g2-alert {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	background-color: rgba(255, 255, 255, 0.9);
+	box-shadow: rgba(0, 0, 0, 0.12) 0px 6px 12px 0px;
+	border-radius: 4px;
 }
 </style>
